@@ -2,11 +2,16 @@ import pygame
 
 
 class Ambiente:
-    def __init__(self, background):
+    def __init__(self, background, mascara):
         self.background = background
-        self.comida = [(300, 200)]  # posição estática por enquanto
+        self.mascara = pygame.mask.from_surface(mascara)
 
     def desenhar(self, screen):
         screen.blit(self.background, (0, 0))
-        for c in self.comida:
-            pygame.draw.circle(screen, (0, 255, 0), c, 5)
+
+    def posicao_valida(self, x, y):
+        """Verifica se a posição (x, y) é andável"""
+        try:
+            return self.mascara.get_at((int(x), int(y))) == 1
+        except IndexError:
+            return False  # Fora do mapa

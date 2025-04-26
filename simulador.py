@@ -5,8 +5,11 @@ import pygame
 
 from agentes import Coelho
 from ambiente import Ambiente
+from utils import ASSETS_PATH
 
-WIDTH, HEIGHT = 800, 600
+fundo = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente.png"))
+WIDTH, HEIGHT = fundo.get_size()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
 def simular_partida(coelho, screen, ambiente, clock):
@@ -32,14 +35,14 @@ def avaliar_genomas(genomas, config):
     pygame.display.set_caption("Simulador de Ecossistema")
     clock = pygame.time.Clock()
 
-    assets_path = os.path.join(os.path.dirname(__file__), "assets")
-    fundo = pygame.image.load(os.path.join(assets_path, "ambiente.png"))
-    sprite_coelho = pygame.image.load(os.path.join(assets_path, "cueio.png"))
+    fundo = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente.png"))
+    mask = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente_mask.png"))
+    sprite_coelho = pygame.image.load(os.path.join(ASSETS_PATH, "cueio.png"))
 
     for _, genome in genomas:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         coelho = Coelho(genome, net, sprite_coelho)
-        ambiente = Ambiente(fundo)
+        ambiente = Ambiente(fundo, mask)
         simular_partida(coelho, screen, ambiente, clock)
         genome.fitness = coelho.fitness
 
