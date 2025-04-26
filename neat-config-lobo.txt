@@ -1,0 +1,21 @@
+[NEAT]
+fitness_criterion = max
+fitness_threshold = 1000
+pop_size = 10
+reset_on_extinction = False
+
+[DefaultGenome]
+# Inputs: dx, dy para o coelho mais próximo
+num_inputs = 2
+num_outputs = 2
+num_hidden = 0
+activation_default = tanh
+activation_mutate_rate = 0.0
+activation_options = tanh
+aggregation_default = sum
+aggregation_mutate_rate = 0.0
+aggregation_options = sum
+bias_init_mean = 0.0
+bias_init_stdev = 1.0
+weight_init_mean = 0.0
+weight_init_stdev = 1.0

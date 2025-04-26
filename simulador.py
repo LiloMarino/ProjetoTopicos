@@ -1,49 +1,41 @@
-import os
-
-import neat
 import pygame
 
-from agentes import Coelho
-from ambiente import Ambiente
-from utils import ASSETS_PATH
-
-fundo = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente.png"))
-WIDTH, HEIGHT = fundo.get_size()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+from utils import distancia
 
 
-def simular_partida(coelho, screen, ambiente, clock):
-    tempo_max = 300
-    for _ in range(tempo_max):
-        pygame.event.pump()
-        ambiente.desenhar(screen)
+class Simulador:
+    def __init__(self, ambiente, coelhos, lobos):
+        self.ambiente = ambiente
+        self.coelhos = coelhos
+        self.lobos = lobos
 
-        # Mock de entrada do agente (colocar lógica real depois)
-        inputs = [1, 0, 0, 1, 0]
-        coelho.agir(inputs)
-        coelho.desenhar(screen)
+    def step(self, nets_coelhos, nets_lobos):
+        # Atualizar Coelhos
+        for i, coelho in enumerate(self.coelhos):
+            if coelho.vivo:
+                inputs = coelho.calcular_inputs(self.lobos)
+                output = nets_coelhos[i].activate(inputs)
+                coelho.mover(output)
 
-        pygame.display.flip()
-        clock.tick(30)
+        # Atualizar Lobos
+        for i, lobo in enumerate(self.lobos):
+            if lobo.vivo:
+                inputs = lobo.calcular_inputs(self.coelhos)
+                output = nets_lobos[i].activate(inputs)
+                lobo.mover(output)
 
-        coelho.fitness += 0.1  # Exemplo: sobreviveu = ganha fitness
+        # Verificar capturas
+        for lobo in self.lobos:
+            for coelho in self.coelhos:
+                if coelho.vivo and distancia(lobo.x, lobo.y, coelho.x, coelho.y) < 20:
+                    coelho.vivo = False
+                    lobo.fitness += 50
 
-
-def avaliar_genomas(genomas, config):
-    pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Simulador de Ecossistema")
-    clock = pygame.time.Clock()
-
-    fundo = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente.png"))
-    mask = pygame.image.load(os.path.join(ASSETS_PATH, "ambiente_mask.png"))
-    sprite_coelho = pygame.image.load(os.path.join(ASSETS_PATH, "cueio.png"))
-
-    for _, genome in genomas:
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        coelho = Coelho(genome, net, sprite_coelho)
-        ambiente = Ambiente(fundo, mask)
-        simular_partida(coelho, screen, ambiente, clock)
-        genome.fitness = coelho.fitness
-
-    pygame.quit()
+    def desenhar(self, screen):
+        self.ambiente.desenhar(screen)
+        for coelho in self.coelhos:
+            if coelho.vivo:
+                coelho.desenhar(screen)
+        for lobo in self.lobos:
+            if lobo.vivo:
+                lobo.desenhar(screen)
