@@ -48,7 +48,7 @@ class Ambiente:
             y = random.randint(h // 2, self.height - h // 2)
 
             # Verifica se a posição gerada está livre
-            if self.img_ambiente_mask.get_at((x, y)):
+            if not self.img_ambiente_mask.get_at((x, y)):
                 self.cenouras.append((x, y))
                 break
 
