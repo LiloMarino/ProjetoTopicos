@@ -114,6 +114,14 @@ class Coelho(Entidade):
                 self.distanciou_do_lobo += 1
         self.distancia_lobo_anterior = dist_lobo_atual
 
+        # Verifica se não morreu de fome
+        # 50% do tempo total + 10% do tempo total a cada cenoura comida
+        if (
+            self.tempo_vivo
+            > const.MAX_TICKS * 0.5 + self.cenouras_comidas * const.MAX_TICKS * 0.10
+        ):
+            self.morrer()
+
         # Após todas as atualizações de estado, recalcula o fitness
         self.calcular_fitness()
 

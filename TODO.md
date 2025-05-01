@@ -1,4 +1,4 @@
-- [ ] Implementar morte por fome (Lobo e Coelho)
+- [x] Implementar morte por fome (Lobo e Coelho)
 - [x] Implementar distância e direção de obstáculos
 - [x] Implementar forma visual de morte
 - [x] Implementar colisão de hitbox

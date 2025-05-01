@@ -101,6 +101,14 @@ class Lobo(Entidade):
                 self.aproximou_do_coelho += 1
         self.distancia_coelho_anterior = dist_coelho_atual
 
+        # Verifica se não morreu de fome
+        # 50% do tempo total + 10% do tempo total a cada coelho comido
+        if (
+            self.tempo_vivo
+            > const.MAX_TICKS * 0.5 + self.coelhos_comidos * const.MAX_TICKS * 0.10
+        ):
+            self.morrer()
+
         # Recalcula o fitness com base nas métricas acumuladas
         self.calcular_fitness()
 
