@@ -1,0 +1,2 @@
+- [ ] Implementar morte por fome (Lobo e Coelho)
+- [ ] Implementar distância e direção de obstáculos

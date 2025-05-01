@@ -38,9 +38,10 @@ class Coelho(Entidade):
             else (0, 0)
         )
 
-        # Lobo mais próximo
-        if lobos:
-            lobo = min(lobos, key=lambda l: (l.x - cx) ** 2 + (l.y - cy) ** 2)
+        # Lobo mais próximo (vivo)
+        lobos_vivos = [l for l in lobos if l.vivo]
+        if lobos_vivos:
+            lobo = min(lobos_vivos, key=lambda l: (l.x - cx) ** 2 + (l.y - cy) ** 2)
             dx_lobo = lobo.x - cx
             dy_lobo = lobo.y - cy
             dist_lobo = math.hypot(dx_lobo, dy_lobo)
