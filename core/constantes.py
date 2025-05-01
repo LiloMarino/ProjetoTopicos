@@ -21,17 +21,31 @@ PATH_AMBIENTE_MASK = ASSETS_DIR / "ambiente_mask.png"
 NEAT_CONFIG_COELHO = BASE_DIR / "core" / "neat-config-coelho.ini"
 NEAT_CONFIG_LOBO = BASE_DIR / "core" / "neat-config-lobo.ini"
 
+# Imagens globais (inicialmente None)
+IMG_COELHO = None
+IMG_LOBO = None
+IMG_CENOURA = None
+IMG_AMBIENTE = None
+IMG_AMBIENTE_MASK = None
 
-# Função auxiliar para carregar imagens com transparência e escala
-def carregar_sprite(caminho: Path) -> pygame.Surface:
-    return pygame.transform.scale(
-        pygame.image.load(caminho).convert_alpha(), TAMANHO_SPRITE
+
+def init_constantes():
+    """Inicializa e carrega as imagens após o display ser criado."""
+    global IMG_COELHO, IMG_LOBO, IMG_CENOURA, IMG_AMBIENTE, IMG_AMBIENTE_MASK
+
+    IMG_COELHO = pygame.transform.scale(
+        pygame.image.load(PATH_COELHO).convert_alpha(), TAMANHO_SPRITE
     )
 
+    IMG_LOBO = pygame.transform.scale(
+        pygame.image.load(PATH_LOBO).convert_alpha(), TAMANHO_SPRITE
+    )
 
-# Carregamento das imagens
-IMG_COELHO = carregar_sprite(PATH_COELHO)
-IMG_LOBO = carregar_sprite(PATH_LOBO)
-IMG_CENOURA = carregar_sprite(PATH_CENOURA)
-IMG_AMBIENTE = pygame.image.load(PATH_AMBIENTE).convert()
-IMG_AMBIENTE_MASK = pygame.mask.from_surface(IMG_AMBIENTE)
+    IMG_CENOURA = pygame.transform.scale(
+        pygame.image.load(PATH_CENOURA).convert_alpha(), TAMANHO_SPRITE
+    )
+
+    IMG_AMBIENTE = pygame.image.load(PATH_AMBIENTE).convert()
+    IMG_AMBIENTE_MASK = pygame.mask.from_surface(
+        pygame.image.load(PATH_AMBIENTE_MASK).convert_alpha()
+    )

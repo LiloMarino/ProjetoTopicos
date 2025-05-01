@@ -3,7 +3,7 @@ import pickle
 import neat
 import pygame
 
-from core.constantes import NEAT_CONFIG_COELHO, NEAT_CONFIG_LOBO, TAMANHO_TELA
+from core import constantes as const
 from core.simulador import Simulador
 
 FPS = 60
@@ -24,7 +24,7 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
     # Cria o simulador com os genomas de ambas as espécies
     simulador = Simulador(genomas_coelhos, genomas_lobos, config_coelho, config_lobo)
 
-    tela = pygame.display.set_mode(TAMANHO_TELA)
+    tela = pygame.display.set_mode(const.TAMANHO_TELA)
     clock = pygame.time.Clock()
 
     tick = 0
@@ -91,7 +91,10 @@ def run_evolucao_dupla(config_path_coelho, config_path_lobo):
 if __name__ == "__main__":
     pygame.init()
     pygame.display.set_caption("Simulador Ecológico com Coevolução")
+    pygame.display.set_mode(const.TAMANHO_TELA)
 
-    run_evolucao_dupla(NEAT_CONFIG_COELHO, NEAT_CONFIG_LOBO)
+    const.init_constantes()
+
+    run_evolucao_dupla(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
 
     pygame.quit()
