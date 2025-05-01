@@ -2,6 +2,8 @@
 - [ ] Implementar distância e direção de obstáculos
 - [x] Implementar forma visual de morte
 - [x] Implementar colisão de hitbox
-- [ ] Corrigir saindo fora do mapa
-- [ ] Corrigir colisão de obstáculos
+- [x] Corrigir saindo fora do mapa
+- [x] Corrigir colisão de obstáculos
 - [ ] Ajustar inputs de colisão de obstáculos
+- [x] Ajustar coleta de cenouras
+- [x] Centralizar coordenadas

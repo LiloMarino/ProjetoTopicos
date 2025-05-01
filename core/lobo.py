@@ -83,7 +83,11 @@ class Lobo(Entidade):
 
         # Verifica se pegou coelho
         for coelho in coelhos:
-            if coelho.vivo and math.hypot(self.x - coelho.x, self.y - coelho.y) < 20:
+            if (
+                coelho.vivo
+                and math.hypot(self.x - coelho.x, self.y - coelho.y)
+                < const.ACTION_RANGE
+            ):
                 coelho.morrer()
                 self.coelhos_comidos += 1
 

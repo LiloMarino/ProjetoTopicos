@@ -29,6 +29,7 @@ IMG_CENOURA = None
 # Outras constantes
 MAX_TICKS = 1000
 FPS = 60
+ACTION_RANGE = 20
 
 
 def init_constantes():

@@ -16,7 +16,8 @@ class Entidade:
         return self.x, self.y
 
     def draw(self, screen: Surface):
-        screen.blit(self.sprite, (int(self.x), int(self.y)))
+        w, h = self.sprite.get_size()
+        screen.blit(self.sprite, (int(self.x - w / 2), int(self.y - h / 2)))
 
     def aplicar_tom_vermelho(self):
         # Aplica efeito de tom vermelho para indicar morte

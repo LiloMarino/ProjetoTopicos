@@ -40,10 +40,11 @@ class Ambiente:
             self.gerar_cenoura()
 
     def gerar_cenoura(self):
+        w, h = self.img_cenoura.get_size()
         while True:
-            # Gera uma posição aleatoria
-            x = random.randint(50, self.width - 50)
-            y = random.randint(50, self.height - 50)
+            # Gera uma posição aleatória onde o CENTRO da cenoura esteja dentro da tela
+            x = random.randint(w // 2, self.width - w // 2)
+            y = random.randint(h // 2, self.height - h // 2)
 
             # Verifica se a posição gerada está livre
             if self.img_ambiente_mask.get_at((x, y)):
@@ -72,32 +73,43 @@ class Ambiente:
 
     def draw(self, screen: Surface):
         screen.blit(self.img_ambiente, (0, 0))
+        w, h = self.img_cenoura.get_size()
         for x, y in self.cenouras:
-            screen.blit(self.img_cenoura, (x, y))
+            screen.blit(self.img_cenoura, (x - w // 2, y - h // 2))
 
     def have_collision(self, x: float, y: float) -> bool:
         x = int(x)
         y = int(y)
         # Verifica se está dentro dos limites da imagem
         if x < 0 or y < 0 or x >= self.width or y >= self.height:
-            # Considera que houve colisão se for fora dos limites
             return True
-        # Retorna True se NÃO for "andável" (preto no mask)
+        # Retorna True se for preto no mask
         return self.img_ambiente_mask.get_at((x, y))
 
-    def have_collision_hitbox(self, x: float, y: float, w: int, h: int) -> bool:
+    def have_collision_hitbox(
+        self, x_centro: float, y_centro: float, w: int, h: int
+    ) -> bool:
         """
-        Verifica colisão nos quatro cantos da hitbox:
-        (x, y), (x+w, y), (x, y+h), (x+w, y+h)
+        Verifica colisão nos quatro cantos e nos quatro pontos médios das arestas da hitbox,
+        a partir do centro da hitbox:
+        - Cantos: (x, y), (x+w, y), (x, y+h), (x+w, y+h)
+        - Meios:  (x+w/2, y), (x, y+h/2), (x+w, y+h/2), (x+w/2, y+h)
         Retorna True se QUALQUER ponto estiver colidindo.
         """
-        cantos = [
-            (x, y),
-            (x + w, y),
-            (x, y + h),
-            (x + w, y + h),
+        x = x_centro - w / 2
+        y = y_centro - h / 2
+
+        pontos = [
+            (x, y),  # Canto superior esquerdo
+            (x + w, y),  # Canto superior direito
+            (x, y + h),  # Canto inferior esquerdo
+            (x + w, y + h),  # Canto inferior direito
+            (x + w / 2, y),  # Meio superior
+            (x, y + h / 2),  # Meio esquerdo
+            (x + w, y + h / 2),  # Meio direito
+            (x + w / 2, y + h),  # Meio inferior
         ]
-        for px, py in cantos:
+        for px, py in pontos:
             if self.have_collision(px, py):
                 return True
         return False

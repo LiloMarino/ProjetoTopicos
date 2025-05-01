@@ -99,9 +99,9 @@ class Coelho(Entidade):
             self.move(dx, dy)
 
         # Verifica se comeu cenoura
-        for cenoura in ambiente.cenouras:
-            if math.hypot(self.x - cenoura[0], self.y - cenoura[1]) < 20:
-                ambiente.remove_cenoura(*cenoura)
+        for cenoura_x, cenoura_y in ambiente.cenouras:
+            if math.hypot(self.x - cenoura_x, self.y - cenoura_y) < const.ACTION_RANGE:
+                ambiente.remove_cenoura(cenoura_x, cenoura_y)
                 self.cenouras_comidas += 1
 
         # Distância ao lobo: se aumentou desde o último tick, considera como "fuga bem sucedida"
