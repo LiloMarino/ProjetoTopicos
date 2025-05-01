@@ -9,8 +9,6 @@ from lobo import Lobo
 from core.ambiente import Ambiente
 from core.simulador import Simulador
 
-ASSETS = "assets"
-
 
 def carregar_imgs():
     coelho_img = pygame.image.load(os.path.join(ASSETS, "cueio.png")).convert_alpha()
