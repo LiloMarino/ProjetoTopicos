@@ -19,6 +19,8 @@ pygame.display.set_caption("Visualização da Máscara de Movimento")
 mask_img = pygame.image.load(const.PATH_AMBIENTE_MASK).convert()
 mask_img = pygame.transform.scale(mask_img, const.TAMANHO_TELA)
 width, height = mask_img.get_size()
+mask_img.set_colorkey((255, 255, 255))
+mask_img = pygame.mask.from_surface(mask_img)
 
 # Cria uma nova superfície para a visualização da máscara
 debug_surface = pygame.Surface((width, height))
@@ -32,7 +34,7 @@ def have_collision(x: float, y: float) -> bool:
     if x < 0 or y < 0 or x >= width or y >= height:
         return True  # Fora dos limites, considera colisão
     # Retorna True se NÃO for "andável" (preto no mask)
-    return not mask_img.get_at((x, y))  # A máscara é preto, então True se for proibido
+    return mask_img.get_at((x, y))  # A máscara é preto, então True se for proibido
 
 
 # Pinta a superfície com base na máscara

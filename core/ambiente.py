@@ -24,6 +24,9 @@ class Ambiente:
         )
 
         # Cria a máscara a partir da versão redimensionada
+        self.img_ambiente_mask.set_colorkey(
+            (255, 255, 255)
+        )  # Define a cor branca como transparente
         self.img_ambiente_mask = pygame.mask.from_surface(self.img_ambiente_mask)
 
         self.width = self.img_ambiente.get_width()
@@ -80,7 +83,7 @@ class Ambiente:
             # Considera que houve colisão se for fora dos limites
             return True
         # Retorna True se NÃO for "andável" (preto no mask)
-        return not self.img_ambiente_mask.get_at((x, y))
+        return self.img_ambiente_mask.get_at((x, y))
 
     def have_collision_hitbox(self, x: float, y: float, w: int, h: int) -> bool:
         """
