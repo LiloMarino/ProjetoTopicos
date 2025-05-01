@@ -6,9 +6,6 @@ import pygame
 from core import constantes as const
 from core.simulador import Simulador
 
-FPS = 60
-MAX_TICKS = 1000
-
 
 def carregar_config(caminho):
     return neat.Config(
@@ -29,7 +26,7 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
 
     tick = 0
     rodando = True
-    while rodando and tick < MAX_TICKS and not simulador.terminou():
+    while rodando and tick < const.MAX_TICKS and not simulador.terminou():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
@@ -39,7 +36,7 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
         simulador.draw(tela)
 
         pygame.display.flip()
-        clock.tick(FPS)
+        clock.tick(const.FPS)
         tick += 1
 
     # Depois, extrai fitness dos agentes

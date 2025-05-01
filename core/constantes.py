@@ -26,6 +26,10 @@ IMG_COELHO = None
 IMG_LOBO = None
 IMG_CENOURA = None
 
+# Outras constantes
+MAX_TICKS = 1000
+FPS = 60
+
 
 def init_constantes():
     """Inicializa e carrega as imagens após o display ser criado."""
