@@ -4,6 +4,6 @@
 - [x] Implementar colisão de hitbox
 - [x] Corrigir saindo fora do mapa
 - [x] Corrigir colisão de obstáculos
-- [ ] Ajustar inputs de colisão de obstáculos
+- [x] Ajustar inputs de colisão de obstáculos
 - [x] Ajustar coleta de cenouras
 - [x] Centralizar coordenadas

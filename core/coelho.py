@@ -57,19 +57,16 @@ class Coelho(Entidade):
         dist_lobo_norm = dist_lobo / ambiente.width
 
         # Obstáculos
-        obstaculos = [
-            ambiente.have_collision(cx, cy - 1),
-            ambiente.have_collision(cx, cy + 1),
-            ambiente.have_collision(cx + 1, cy),
-            ambiente.have_collision(cx - 1, cy),
-        ]
+        w, h = self.sprite.get_size()
+        up, down, left, right = ambiente.detect_obstacles(cx, cy, w, h)
+        obstaculos = [int(up), int(down), int(left), int(right)]
 
         return [
             dist_cenoura_norm,
             *direction_cenoura,
             dist_lobo_norm,
             *direction_lobo,
-            *map(int, obstaculos),
+            *obstaculos,
         ], dist_lobo
 
     def calcular_fitness(self):

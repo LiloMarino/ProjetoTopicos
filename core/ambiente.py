@@ -86,6 +86,33 @@ class Ambiente:
         # Retorna True se for preto no mask
         return self.img_ambiente_mask.get_at((x, y))
 
+    def detect_obstacles(
+        self, x_centro: float, y_centro: float, w: int, h: int
+    ) -> tuple[bool, bool, bool, bool]:
+        """
+        Retorna uma tupla de 4 booleans (up, down, left, right) indicando
+        se há colisão logo acima, abaixo, à esquerda e à direita da hitbox
+        centrada em (x_centro, y_centro) com tamanho w x h.
+        """
+        half_w, half_h = w / 2, h / 2
+        x = x_centro - half_w
+        y = y_centro - half_h
+        pontos = [
+            (x + half_w, y),  # Meio superior
+            (x, y),  # Canto superior esquerdo
+            (x + w, y),  # Canto superior direito
+            (x, y + half_h),  # Meio esquerdo
+            (x + w, y + half_h),  # Meio direito
+            (x, y + h),  # Canto inferior esquerdo
+            (x + w, y + h),  # Canto inferior direito
+            (x + half_w, y + h),  # Meio inferior
+        ]
+        up = any(self.have_collision(x, y) for x, y in pontos[:3])
+        down = any(self.have_collision(x, y) for x, y in pontos[5:])
+        left = any(self.have_collision(x, y) for x, y in pontos[1:6:2])
+        right = any(self.have_collision(x, y) for x, y in pontos[2:7:2])
+        return up, down, left, right
+
     def have_collision_hitbox(
         self, x_centro: float, y_centro: float, w: int, h: int
     ) -> bool:
@@ -96,20 +123,4 @@ class Ambiente:
         - Meios:  (x+w/2, y), (x, y+h/2), (x+w, y+h/2), (x+w/2, y+h)
         Retorna True se QUALQUER ponto estiver colidindo.
         """
-        x = x_centro - w / 2
-        y = y_centro - h / 2
-
-        pontos = [
-            (x, y),  # Canto superior esquerdo
-            (x + w, y),  # Canto superior direito
-            (x, y + h),  # Canto inferior esquerdo
-            (x + w, y + h),  # Canto inferior direito
-            (x + w / 2, y),  # Meio superior
-            (x, y + h / 2),  # Meio esquerdo
-            (x + w, y + h / 2),  # Meio direito
-            (x + w / 2, y + h),  # Meio inferior
-        ]
-        for px, py in pontos:
-            if self.have_collision(px, py):
-                return True
-        return False
+        return any(self.detect_obstacles(x_centro, y_centro, w, h))

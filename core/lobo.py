@@ -42,17 +42,14 @@ class Lobo(Entidade):
         dist_coelho_norm = dist_coelho / ambiente.width
 
         # Obstáculos
-        obstaculos = [
-            ambiente.have_collision(cx, cy - 1),  # Norte
-            ambiente.have_collision(cx, cy + 1),  # Sul
-            ambiente.have_collision(cx + 1, cy),  # Leste
-            ambiente.have_collision(cx - 1, cy),  # Oeste
-        ]
+        w, h = self.sprite.get_size()
+        up, down, left, right = ambiente.detect_obstacles(cx, cy, w, h)
+        obstaculos = [int(up), int(down), int(left), int(right)]
 
         return [
             dist_coelho_norm,
             *direction_coelho,
-            *map(int, obstaculos),
+            *obstaculos,
         ], dist_coelho
 
     def calcular_fitness(self):
