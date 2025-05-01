@@ -2,7 +2,6 @@ import math
 
 from core import constantes as const
 from core.ambiente import Ambiente
-from core.coelho import Coelho
 from core.entidade import Entidade
 
 
@@ -19,7 +18,7 @@ class Lobo(Entidade):
         self.distancia_coelho_anterior = None
         self.aproximou_do_coelho = 0
 
-    def get_inputs(self, ambiente: Ambiente, coelhos: list[Coelho]):
+    def get_inputs(self, ambiente: Ambiente, coelhos: list):
         cx, cy = self.get_pos()
 
         # Coelho mais próximo (vivo)
@@ -64,7 +63,7 @@ class Lobo(Entidade):
         if not self.vivo:
             self.fitness -= 10  # -10 por morrer
 
-    def update(self, ambiente: Ambiente, coelhos: list[Coelho]):
+    def update(self, ambiente: Ambiente, coelhos: list):
         if not self.vivo:
             return
 
