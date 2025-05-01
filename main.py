@@ -3,11 +3,11 @@ import random
 
 import neat
 import pygame
-
-from ambiente import Ambiente
 from coelho import Coelho
 from lobo import Lobo
-from simulador import Simulador
+
+from core.ambiente import Ambiente
+from core.simulador import Simulador
 
 ASSETS = "assets"
 
@@ -63,7 +63,7 @@ def eval_genomes(genomes_coelho, config_coelho, genomes_lobo, config_lobo, ambie
                 exit()
 
         screen.fill((255, 255, 255))
-        simulador.desenhar(screen)
+        simulador.draw(screen)
         pygame.display.update()
 
 

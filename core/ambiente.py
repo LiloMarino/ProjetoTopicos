@@ -1,0 +1,2 @@
+class Ambiente:
+    pass
