@@ -1,3 +1,4 @@
+import math
 import random
 import time
 
@@ -124,3 +125,32 @@ class Ambiente:
         Retorna True se QUALQUER ponto estiver colidindo.
         """
         return any(self.detect_obstacles(x_centro, y_centro, w, h))
+
+    def get_nearest_obstacle_info(
+        self, x: float, y: float, max_dist: float = 150, steps: int = 36
+    ):
+        """
+        Retorna a direção normalizada e a distância até o obstáculo mais próximo.
+        A varredura é feita em vários ângulos a partir da posição (x, y).
+        """
+        closest_distance = max_dist
+        closest_dx, closest_dy = 0, 0
+
+        for i in range(steps):
+            angle = (2 * math.pi / steps) * i
+            dx = math.cos(angle)
+            dy = math.sin(angle)
+
+            for d in range(1, int(max_dist)):
+                tx = int(x + dx * d)
+                ty = int(y + dy * d)
+                if self.have_collision(tx, ty):
+                    if d < closest_distance:
+                        closest_distance = d
+                        closest_dx = dx
+                        closest_dy = dy
+                    break
+
+        direction = (closest_dx, closest_dy)
+        normalized_distance = closest_distance / max_dist  # [0, 1]
+        return direction, normalized_distance

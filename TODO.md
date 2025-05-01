@@ -1,5 +1,5 @@
 - [ ] Implementar morte por fome (Lobo e Coelho)
-- [ ] Implementar distância e direção de obstáculos
+- [x] Implementar distância e direção de obstáculos
 - [x] Implementar forma visual de morte
 - [x] Implementar colisão de hitbox
 - [x] Corrigir saindo fora do mapa
