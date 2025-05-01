@@ -61,5 +61,9 @@ class Ambiente:
     def have_collision(self, x: float, y: float) -> bool:
         x = int(x)
         y = int(y)
+        # Verifica se está dentro dos limites da imagem
+        if x < 0 or y < 0 or x >= self.width or y >= self.height:
+            # Considera que houve colisão se for fora dos limites
+            return True
         # Retorna True se NÃO for "andável" (preto no mask)
         return not self.img_ambiente_mask.get_at((x, y))
