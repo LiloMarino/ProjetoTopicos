@@ -1,4 +1,7 @@
 - [ ] Implementar morte por fome (Lobo e Coelho)
 - [ ] Implementar distância e direção de obstáculos
 - [x] Implementar forma visual de morte
-- [ ] Implementar colisão de hitbox
+- [x] Implementar colisão de hitbox
+- [ ] Corrigir saindo fora do mapa
+- [ ] Corrigir colisão de obstáculos
+- [ ] Ajustar inputs de colisão de obstáculos

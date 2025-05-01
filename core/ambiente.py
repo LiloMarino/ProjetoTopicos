@@ -81,3 +81,20 @@ class Ambiente:
             return True
         # Retorna True se NÃO for "andável" (preto no mask)
         return not self.img_ambiente_mask.get_at((x, y))
+
+    def have_collision_hitbox(self, x: float, y: float, w: int, h: int) -> bool:
+        """
+        Verifica colisão nos quatro cantos da hitbox:
+        (x, y), (x+w, y), (x, y+h), (x+w, y+h)
+        Retorna True se QUALQUER ponto estiver colidindo.
+        """
+        cantos = [
+            (x, y),
+            (x + w, y),
+            (x, y + h),
+            (x + w, y + h),
+        ]
+        for px, py in cantos:
+            if self.have_collision(px, py):
+                return True
+        return False

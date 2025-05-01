@@ -21,7 +21,7 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
     # Cria o simulador com os genomas de ambas as espécies
     simulador = Simulador(genomas_coelhos, genomas_lobos, config_coelho, config_lobo)
 
-    tela = pygame.display.get_surface() or pygame.display.set_mode(const.TAMANHO_TELA)
+    tela = pygame.display.set_mode(const.TAMANHO_TELA)
     clock = pygame.time.Clock()
 
     tick = 0

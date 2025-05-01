@@ -77,7 +77,8 @@ class Lobo(Entidade):
 
         # Tenta se mover
         nova_x, nova_y = self.x + dx, self.y + dy
-        if not ambiente.have_collision(nova_x, nova_y):
+        w, h = self.sprite.get_size()
+        if not ambiente.have_collision_hitbox(nova_x, nova_y, w, h):
             self.move(dx, dy)
 
         # Verifica se pegou coelho
