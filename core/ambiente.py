@@ -1,6 +1,7 @@
 import random
 import time
 
+import pygame
 from pygame import Surface
 
 from core import constantes as const
@@ -10,11 +11,24 @@ class Ambiente:
     RESPAWN_CENOURA = 10
 
     def __init__(self, n_cenouras: int = 5):
-        self.img_ambiente = const.IMG_AMBIENTE
-        self.img_ambiente_mask = const.IMG_AMBIENTE_MASK
+        self.img_ambiente = pygame.image.load(const.PATH_AMBIENTE).convert()
+        self.img_ambiente_mask = pygame.image.load(const.PATH_AMBIENTE_MASK).convert()
         self.img_cenoura = const.IMG_CENOURA
+
+        # Redimensiona as imagens do ambiente para o tamanho da tela
+        self.img_ambiente = pygame.transform.scale(
+            self.img_ambiente, const.TAMANHO_TELA
+        )
+        self.img_ambiente_mask = pygame.transform.scale(
+            self.img_ambiente_mask, const.TAMANHO_TELA
+        )
+
+        # Cria a máscara a partir da versão redimensionada
+        self.img_ambiente_mask = pygame.mask.from_surface(self.img_ambiente_mask)
+
         self.width = self.img_ambiente.get_width()
         self.height = self.img_ambiente.get_height()
+
         self.cenouras: list[tuple[int, int]] = []  # Lista de cenouras no ambiente
         self.cenouras_em_espera: list[float] = []  # Lista de cenouras para spawnar
 

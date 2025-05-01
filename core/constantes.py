@@ -3,7 +3,7 @@ from pathlib import Path
 import pygame
 
 # Tamanhos
-TAMANHO_TELA = (800, 600)
+TAMANHO_TELA = (1024, 1024)
 TAMANHO_SPRITE = (32, 32)
 
 # Diretórios
@@ -25,13 +25,11 @@ NEAT_CONFIG_LOBO = BASE_DIR / "core" / "neat-config-lobo.ini"
 IMG_COELHO = None
 IMG_LOBO = None
 IMG_CENOURA = None
-IMG_AMBIENTE = None
-IMG_AMBIENTE_MASK = None
 
 
 def init_constantes():
     """Inicializa e carrega as imagens após o display ser criado."""
-    global IMG_COELHO, IMG_LOBO, IMG_CENOURA, IMG_AMBIENTE, IMG_AMBIENTE_MASK
+    global IMG_COELHO, IMG_LOBO, IMG_CENOURA
 
     IMG_COELHO = pygame.transform.scale(
         pygame.image.load(PATH_COELHO).convert_alpha(), TAMANHO_SPRITE
@@ -43,9 +41,4 @@ def init_constantes():
 
     IMG_CENOURA = pygame.transform.scale(
         pygame.image.load(PATH_CENOURA).convert_alpha(), TAMANHO_SPRITE
-    )
-
-    IMG_AMBIENTE = pygame.image.load(PATH_AMBIENTE).convert()
-    IMG_AMBIENTE_MASK = pygame.mask.from_surface(
-        pygame.image.load(PATH_AMBIENTE_MASK).convert_alpha()
     )
