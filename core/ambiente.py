@@ -39,7 +39,7 @@ class Ambiente:
             reaparecimento = time.time() + self.RESPAWN_CENOURA
             self.cenouras_em_espera.append(reaparecimento)
 
-    def get_nearest_cenoura(self, x: int, y: int):
+    def get_nearest_cenoura(self, x: float, y: float):
         if not self.cenouras:
             return None
         # Calcula a distância sem a raiz quadrada para melhor desempenho
