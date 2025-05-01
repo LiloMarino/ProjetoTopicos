@@ -18,8 +18,8 @@ PATH_AMBIENTE = ASSETS_DIR / "ambiente.png"
 PATH_AMBIENTE_MASK = ASSETS_DIR / "ambiente_mask.png"
 
 # Caminhos de config NEAT
-NEAT_CONFIG_COELHO = BASE_DIR / "core" / "neat-config-coelho.txt"
-NEAT_CONFIG_LOBO = BASE_DIR / "core" / "neat-config-lobo.txt"
+NEAT_CONFIG_COELHO = BASE_DIR / "core" / "neat-config-coelho.ini"
+NEAT_CONFIG_LOBO = BASE_DIR / "core" / "neat-config-lobo.ini"
 
 
 # Função auxiliar para carregar imagens com transparência e escala
