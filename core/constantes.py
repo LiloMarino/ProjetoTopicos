@@ -7,7 +7,7 @@ TAMANHO_TELA = (800, 600)
 TAMANHO_SPRITE = (32, 32)
 
 # Diretórios
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 ASSETS_DIR = BASE_DIR / "assets"
 
 # Caminhos de imagem
@@ -16,6 +16,10 @@ PATH_LOBO = ASSETS_DIR / "lobo.png"
 PATH_CENOURA = ASSETS_DIR / "cenoura.png"
 PATH_AMBIENTE = ASSETS_DIR / "ambiente.png"
 PATH_AMBIENTE_MASK = ASSETS_DIR / "ambiente_mask.png"
+
+# Caminhos de config NEAT
+NEAT_CONFIG_COELHO = BASE_DIR / "core" / "neat-config-coelho.txt"
+NEAT_CONFIG_LOBO = BASE_DIR / "core" / "neat-config-lobo.txt"
 
 
 # Função auxiliar para carregar imagens com transparência e escala

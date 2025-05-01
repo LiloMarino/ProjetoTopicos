@@ -1,122 +1,97 @@
-import os
-import random
+import pickle
 
 import neat
 import pygame
-from coelho import Coelho
-from lobo import Lobo
 
-from core.ambiente import Ambiente
+from core.constantes import NEAT_CONFIG_COELHO, NEAT_CONFIG_LOBO, TAMANHO_TELA
 from core.simulador import Simulador
 
-
-def carregar_imgs():
-    coelho_img = pygame.image.load(os.path.join(ASSETS, "cueio.png")).convert_alpha()
-    lobo_img = pygame.image.load(os.path.join(ASSETS, "lobo.png")).convert_alpha()
-    return coelho_img, lobo_img
+FPS = 60
+MAX_TICKS = 1000
 
 
-def eval_genomes(genomes_coelho, config_coelho, genomes_lobo, config_lobo, ambiente):
-    nets_coelho = []
-    coelhos = []
-    for genome_id, genome in genomes_coelho:
-        net = neat.nn.FeedForwardNetwork.create(genome, config_coelho)
-        nets_coelho.append(net)
-        x = random.randint(50, ambiente.width - 50)
-        y = random.randint(50, ambiente.height - 50)
-        coelho = Coelho(x, y, coelho_img, ambiente)
-        coelhos.append(coelho)
-        genome.fitness = 0
+def carregar_config(caminho):
+    return neat.Config(
+        neat.DefaultGenome,
+        neat.DefaultReproduction,
+        neat.DefaultSpeciesSet,
+        neat.DefaultStagnation,
+        str(caminho),
+    )
 
-    nets_lobo = []
-    lobos = []
-    for genome_id, genome in genomes_lobo:
-        net = neat.nn.FeedForwardNetwork.create(genome, config_lobo)
-        nets_lobo.append(net)
-        x = random.randint(50, ambiente.width - 50)
-        y = random.randint(50, ambiente.height - 50)
-        lobo = Lobo(x, y, lobo_img, ambiente)
-        lobos.append(lobo)
-        genome.fitness = 0
 
-    simulador = Simulador(ambiente, coelhos, lobos)
+def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
+    # Cria o simulador com os genomas de ambas as espécies
+    simulador = Simulador(genomas_coelhos, genomas_lobos, config_coelho, config_lobo)
+
+    tela = pygame.display.set_mode(TAMANHO_TELA)
     clock = pygame.time.Clock()
 
-    run = True
-    while run and any(coelho.vivo for coelho in coelhos):
-        clock.tick(60)
-        simulador.step(nets_coelho, nets_lobo)
+    tick = 0
+    rodando = True
+    while rodando and tick < MAX_TICKS and not simulador.terminou():
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
 
-        for i, coelho in enumerate(coelhos):
-            if coelho.vivo:
-                genomes_coelho[i][1].fitness += 0.1  # viver é bom
+        simulador.executar_tick()
+        simulador.draw(tela)
 
-        for i, lobo in enumerate(lobos):
-            genomes_lobo[i][1].fitness += lobo.fitness  # comer é bom
+        pygame.display.flip()
+        clock.tick(FPS)
+        tick += 1
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-                exit()
+    # Após a simulação, atualiza os fitness dos genomas
+    fitness_coelhos, fitness_lobos = simulador.obter_fitness()
 
-        screen.fill((255, 255, 255))
-        simulador.draw(screen)
-        pygame.display.update()
+    for i, (genoma_id, genoma) in enumerate(genomas_coelhos):
+        genoma.fitness = fitness_coelhos[i]
+
+    for i, (genoma_id, genoma) in enumerate(genomas_lobos):
+        genoma.fitness = fitness_lobos[i]
 
 
-def run(config_coelho_path, config_lobo_path):
-    pygame.init()
-    ambiente = Ambiente(
-        os.path.join(ASSETS, "ambiente.png"), os.path.join(ASSETS, "mask_ambiente.png")
-    )
-    global screen
-    screen = pygame.display.set_mode((ambiente.width, ambiente.height))
+def run_evolucao_dupla(config_path_coelho, config_path_lobo):
+    config_coelho = carregar_config(config_path_coelho)
+    config_lobo = carregar_config(config_path_lobo)
 
-    global coelho_img, lobo_img
-    coelho_img, lobo_img = carregar_imgs()
+    populacao_coelho = neat.Population(config_coelho)
+    populacao_lobo = neat.Population(config_lobo)
 
-    config_coelho = neat.Config(
-        neat.DefaultGenome,
-        neat.DefaultReproduction,
-        neat.DefaultSpeciesSet,
-        neat.DefaultStagnation,
-        config_coelho_path,
-    )
+    populacao_coelho.add_reporter(neat.StdOutReporter(True))
+    populacao_coelho.add_reporter(neat.StatisticsReporter())
 
-    config_lobo = neat.Config(
-        neat.DefaultGenome,
-        neat.DefaultReproduction,
-        neat.DefaultSpeciesSet,
-        neat.DefaultStagnation,
-        config_lobo_path,
-    )
+    populacao_lobo.add_reporter(neat.StdOutReporter(True))
+    populacao_lobo.add_reporter(neat.StatisticsReporter())
 
-    pop_coelho = neat.Population(config_coelho)
-    pop_lobo = neat.Population(config_lobo)
+    geracoes = 50
+    for geracao in range(geracoes):
+        print(f"\n====== GERAÇÃO {geracao} ======")
 
-    # Loop manual: rodamos gerações juntos
-    for g in range(50):
-        print(f"==== Geração {g} ====")
-        genomes_coelho = []
-        pop_coelho.population.items()
-        for genome_id, genome in pop_coelho.population.items():
-            genomes_coelho.append((genome_id, genome))
+        # Cria listas dos genomas de ambas as populações
+        genomas_coelhos = []
+        populacao_coelho.run(lambda genomas, config: genomas_coelhos.extend(genomas), 1)
 
-        genomes_lobo = []
-        pop_lobo.population.items()
-        for genome_id, genome in pop_lobo.population.items():
-            genomes_lobo.append((genome_id, genome))
+        genomas_lobos = []
+        populacao_lobo.run(lambda genomas, config: genomas_lobos.extend(genomas), 1)
 
-        eval_genomes(genomes_coelho, config_coelho, genomes_lobo, config_lobo, ambiente)
+        # Roda a simulação com os genomas desta geração
+        avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
 
-        pop_coelho.reporters.end_generation(
-            config_coelho, pop_coelho.population, pop_coelho.species
-        )
-        pop_lobo.reporters.end_generation(
-            config_lobo, pop_lobo.population, pop_lobo.species
-        )
+    # Salva os melhores genomas
+    with open("melhor_coelho.pkl", "wb") as f:
+        pickle.dump(populacao_coelho.best_genome, f)
+
+    with open("melhor_lobo.pkl", "wb") as f:
+        pickle.dump(populacao_lobo.best_genome, f)
+
+    print("Melhores genomas salvos!")
 
 
 if __name__ == "__main__":
-    run("neat-config-coelho.txt", "neat-config-lobo.txt")
+    pygame.init()
+    pygame.display.set_caption("Simulador Ecológico com Coevolução")
+
+    run_evolucao_dupla(NEAT_CONFIG_COELHO, NEAT_CONFIG_LOBO)
+
+    pygame.quit()
