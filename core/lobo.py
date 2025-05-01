@@ -97,3 +97,4 @@ class Lobo(Entidade):
 
     def morrer(self):
         self.vivo = False
+        self.aplicar_tom_vermelho()

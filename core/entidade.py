@@ -1,3 +1,4 @@
+import pygame
 from pygame import Surface
 
 
@@ -16,3 +17,11 @@ class Entidade:
 
     def draw(self, screen: Surface):
         screen.blit(self.sprite, (int(self.x), int(self.y)))
+
+    def aplicar_tom_vermelho(self):
+        # Aplica efeito de tom vermelho para indicar morte
+        vermelho = pygame.Surface(self.sprite.get_size()).convert_alpha()
+        vermelho.fill((255, 0, 0, 100))  # Vermelho semi-transparente
+        sprite_avermelhado = self.sprite.copy()
+        sprite_avermelhado.blit(vermelho, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+        self.sprite = sprite_avermelhado

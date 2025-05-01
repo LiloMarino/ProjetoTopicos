@@ -114,3 +114,4 @@ class Coelho(Entidade):
 
     def morrer(self):
         self.vivo = False
+        self.aplicar_tom_vermelho()
