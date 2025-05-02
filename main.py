@@ -1,3 +1,4 @@
+import copy
 import pickle
 
 import neat
@@ -61,53 +62,84 @@ def run_evolucao_dupla(config_path_coelho, config_path_lobo):
     pop_lobo.add_reporter(neat.StatisticsReporter())
 
     geracoes = 50
-    for geracao in range(geracoes):
-        print(f"\n====== GERAÇÃO {geracao} ======")
+    try:
+        for geracao in range(geracoes):
+            print(f"\n====== GERAÇÃO {geracao} ======")
 
-        # Gera listas de (id, genome)
-        genomas_coelhos = list(pop_coelho.population.items())
-        genomas_lobos = list(pop_lobo.population.items())
+            # Gera listas de (id, genome)
+            genomas_coelhos = list(pop_coelho.population.items())
+            genomas_lobos = list(pop_lobo.population.items())
 
-        # Reporta início
-        pop_coelho.reporters.start_generation(pop_coelho.generation)
-        pop_lobo.reporters.start_generation(pop_lobo.generation)
+            # Reporta início
+            pop_coelho.reporters.start_generation(pop_coelho.generation)
+            pop_lobo.reporters.start_generation(pop_lobo.generation)
 
-        # Avalia
-        avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
+            # Avalia
+            avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
 
-        # Reporta fim e reproduz
-        pop_coelho.reporters.end_generation(
-            config_coelho, pop_coelho.population, pop_coelho.species
-        )
-        pop_lobo.reporters.end_generation(
-            config_lobo, pop_lobo.population, pop_lobo.species
-        )
+            # Reporta fim e reproduz
+            pop_coelho.reporters.end_generation(
+                config_coelho, pop_coelho.population, pop_coelho.species
+            )
+            pop_lobo.reporters.end_generation(
+                config_lobo, pop_lobo.population, pop_lobo.species
+            )
 
-        pop_coelho.population = pop_coelho.reproduction.reproduce(
-            config_coelho,
-            pop_coelho.species,
-            config_coelho.pop_size,
-            pop_coelho.generation,
-        )
-        pop_lobo.population = pop_lobo.reproduction.reproduce(
-            config_lobo, pop_lobo.species, config_lobo.pop_size, pop_lobo.generation
-        )
+            pop_coelho.population = pop_coelho.reproduction.reproduce(
+                config_coelho,
+                pop_coelho.species,
+                config_coelho.pop_size,
+                pop_coelho.generation,
+            )
+            pop_lobo.population = pop_lobo.reproduction.reproduce(
+                config_lobo, pop_lobo.species, config_lobo.pop_size, pop_lobo.generation
+            )
 
-        pop_coelho.species.speciate(
-            config_coelho, pop_coelho.population, pop_coelho.generation
-        )
-        pop_lobo.species.speciate(config_lobo, pop_lobo.population, pop_lobo.generation)
+            pop_coelho.species.speciate(
+                config_coelho, pop_coelho.population, pop_coelho.generation
+            )
+            pop_lobo.species.speciate(
+                config_lobo, pop_lobo.population, pop_lobo.generation
+            )
 
-        pop_coelho.generation += 1
-        pop_lobo.generation += 1
+            pop_coelho.generation += 1
+            pop_lobo.generation += 1
+    except KeyboardInterrupt:
+        print("\nInterrupção detectada! Salvando progresso...")
+    finally:
+        # Salva os melhores genomas mesmo se a execução for interrompida
+        with open("melhor_coelho.pkl", "wb") as f:
+            best_coelho = copy.deepcopy(pop_coelho.best_genome)
+            best_coelho.connections = pop_coelho.best_genome.connections.copy()
+            pickle.dump(best_coelho, f)
+        with open("melhor_lobo.pkl", "wb") as f:
+            best_lobo = copy.deepcopy(pop_lobo.best_genome)
+            best_lobo.connections = pop_lobo.best_genome.connections.copy()
+            pickle.dump(best_lobo, f)
+        print("Melhores genomas salvos!")
+        with open("pop_coelho.pkl", "wb") as f:
+            pickle.dump(pop_coelho, f)
+        with open("pop_lobo.pkl", "wb") as f:
+            pickle.dump(pop_lobo, f)
+        print("População salva!")
 
-    # Salva melhores
-    with open("melhor_coelho.pkl", "wb") as f:
-        pickle.dump(pop_coelho.best_genome, f)
-    with open("melhor_lobo.pkl", "wb") as f:
-        pickle.dump(pop_lobo.best_genome, f)
 
-    print("Melhores genomas salvos!")
+def testar_melhores(config_path_coelho, config_path_lobo):
+    config_coelho = carregar_config(config_path_coelho)
+    config_lobo = carregar_config(config_path_lobo)
+
+    # Carrega os melhores genomas
+    with open("melhor_coelho.pkl", "rb") as f:
+        melhor_coelho = pickle.load(f)
+    with open("melhor_lobo.pkl", "rb") as f:
+        melhor_lobo = pickle.load(f)
+
+    # Cria listas com um único genoma
+    genomas_coelhos = [(0, melhor_coelho)]
+    genomas_lobos = [(0, melhor_lobo)]
+
+    # Roda a simulação normal (sem NEAT)
+    avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
 
 
 if __name__ == "__main__":
@@ -115,5 +147,17 @@ if __name__ == "__main__":
     pygame.display.set_caption("Simulador Ecológico com Coevolução")
     pygame.display.set_mode(const.TAMANHO_TELA)
     const.init_constantes()
-    run_evolucao_dupla(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
+
+    modo = (
+        input("Digite [t] para treinar ou [x] para testar os melhores salvos: ")
+        .strip()
+        .lower()
+    )
+    if modo == "t":
+        run_evolucao_dupla(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
+    elif modo == "x":
+        testar_melhores(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
+    else:
+        print("Modo inválido.")
+
     pygame.quit()
