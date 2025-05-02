@@ -11,8 +11,8 @@
 - +0.5/tick indicando uma fuga bem sucedida
 - +1 por se afastar do lobo
 - -1 por se aproximar do lobo
-- +20 por comer cenoura
-- -10 por morrer (tanto por fome quanto pelo lobo)
+- +100 por comer cenoura
+- -100 por morrer (tanto por fome quanto pelo lobo)
 
 #### Inputs
 
@@ -38,11 +38,11 @@
 
 **Como é definido o lobo mais apto?**
 
-- -0.5/tick indicando uma caça mal sucedida
+- -1/tick indicando uma caça mal sucedida
 - +1 por se aproximar do coelho
 - -1 por se afastar do coelho
-- +20 por comer coelho
-- -10 por morrer (por fome)
+- +100 por comer coelho
+- -100 por morrer (por fome)
 
 #### Inputs
 

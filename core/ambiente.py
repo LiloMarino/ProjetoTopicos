@@ -11,7 +11,7 @@ from core import constantes as const
 class Ambiente:
     RESPAWN_CENOURA = 10
 
-    def __init__(self, n_cenouras: int = 5):
+    def __init__(self, n_cenouras: int = 10):
         self.img_ambiente = pygame.image.load(const.PATH_AMBIENTE).convert()
         self.img_ambiente_mask = pygame.image.load(const.PATH_AMBIENTE_MASK).convert()
         self.img_cenoura = const.IMG_CENOURA
