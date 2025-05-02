@@ -8,9 +8,10 @@
 
 **Como é definido o coelho mais apto?**
 
-- +1/s indicando uma fuga bem sucedida
-- +1 por se distanciar do lobo
-- +5 por comer cenoura
+- +0.5/tick indicando uma fuga bem sucedida
+- +1 por se afastar do lobo
+- -1 por se aproximar do lobo
+- +20 por comer cenoura
 - -10 por morrer (tanto por fome quanto pelo lobo)
 
 #### Inputs
@@ -37,9 +38,10 @@
 
 **Como é definido o lobo mais apto?**
 
-- -1/s indicando uma caça mal sucedida
+- -0.5/tick indicando uma caça mal sucedida
 - +1 por se aproximar do coelho
-- +5 por comer coelho
+- -1 por se afastar do coelho
+- +20 por comer coelho
 - -10 por morrer (por fome)
 
 #### Inputs

@@ -17,6 +17,7 @@ class Lobo(Entidade):
         self.coelhos_comidos = 0
         self.distancia_coelho_anterior = None
         self.aproximou_do_coelho = 0
+        self.distanciou_do_coelho = 0
 
     def get_inputs(self, ambiente: Ambiente, coelhos: list):
         cx, cy = self.get_pos()
@@ -61,9 +62,10 @@ class Lobo(Entidade):
 
     def calcular_fitness(self):
         self.fitness = 0
-        self.fitness -= self.tempo_vivo  # -1 por tempo vivo
-        self.fitness += 5 * self.coelhos_comidos  # +5 por coelho comido
+        self.fitness -= self.tempo_vivo * 1  # -1 por tempo vivo
+        self.fitness += 20 * self.coelhos_comidos  # +20 por coelho comido
         self.fitness += self.aproximou_do_coelho  # +1 por cada aproximação de coelho
+        self.fitness -= self.distanciou_do_coelho  # -1 por cada vez que se afastou
         if not self.vivo:
             self.fitness -= 10  # -10 por morrer
 
@@ -99,6 +101,8 @@ class Lobo(Entidade):
         if self.distancia_coelho_anterior is not None:
             if dist_coelho_atual < self.distancia_coelho_anterior:
                 self.aproximou_do_coelho += 1
+            else:
+                self.distanciou_do_coelho += 1
         self.distancia_coelho_anterior = dist_coelho_atual
 
         # Verifica se não morreu de fome

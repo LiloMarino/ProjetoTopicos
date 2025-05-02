@@ -1,4 +1,3 @@
-import copy
 import pickle
 
 import neat
@@ -107,12 +106,7 @@ def run_evolucao_dupla(config_path_coelho, config_path_lobo):
     except KeyboardInterrupt:
         print("\nInterrupção detectada! Salvando progresso...")
     finally:
-        # Salva os melhores genomas mesmo se a execução for interrompida
-        with open("melhor_coelho.pkl", "wb") as f:
-            pickle.dump(pop_coelho.best_genome, f)
-        with open("melhor_lobo.pkl", "wb") as f:
-            pickle.dump(pop_lobo.best_genome, f)
-        print("Melhores genomas salvos!")
+        # Salva a população
         with open("pop_coelho.pkl", "wb") as f:
             pickle.dump(pop_coelho, f)
         with open("pop_lobo.pkl", "wb") as f:
@@ -125,14 +119,14 @@ def testar_melhores(config_path_coelho, config_path_lobo):
     config_lobo = carregar_config(config_path_lobo)
 
     # Carrega os melhores genomas
-    with open("melhor_coelho.pkl", "rb") as f:
-        melhor_coelho = pickle.load(f)
-    with open("melhor_lobo.pkl", "rb") as f:
-        melhor_lobo = pickle.load(f)
+    with open("pop_coelho.pkl", "rb") as f:
+        pop_coelho = pickle.load(f)
+    with open("pop_lobo.pkl", "rb") as f:
+        pop_lobo = pickle.load(f)
 
     # Cria listas com um único genoma
-    genomas_coelhos = [(0, melhor_coelho)]
-    genomas_lobos = [(0, melhor_lobo)]
+    genomas_coelhos = [(0, pop_coelho.best_genome)]
+    genomas_lobos = [(0, pop_lobo.best_genome)]
 
     # Roda a simulação normal (sem NEAT)
     avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
