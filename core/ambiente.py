@@ -6,6 +6,7 @@ import pygame
 from pygame import Surface
 
 from core import constantes as const
+from debug.debug_functions import draw_coords_list
 
 
 class Ambiente:
@@ -72,6 +73,7 @@ class Ambiente:
             self.gerar_cenoura()
             self.cenouras_em_espera.remove(_)
 
+    @draw_coords_list(pos_attr_name="cenouras", sprite_attr_name="img_cenoura")
     def draw(self, screen: Surface):
         screen.blit(self.img_ambiente, (0, 0))
         w, h = self.img_cenoura.get_size()

@@ -30,11 +30,12 @@ IMG_CENOURA = None
 MAX_TICKS = 1000
 FPS = 60
 ACTION_RANGE = 20
+FONT = None
 
 
 def init_constantes():
     """Inicializa e carrega as imagens após o display ser criado."""
-    global IMG_COELHO, IMG_LOBO, IMG_CENOURA
+    global IMG_COELHO, IMG_LOBO, IMG_CENOURA, FONT
 
     IMG_COELHO = pygame.transform.scale(
         pygame.image.load(PATH_COELHO).convert_alpha(), TAMANHO_SPRITE
@@ -47,3 +48,4 @@ def init_constantes():
     IMG_CENOURA = pygame.transform.scale(
         pygame.image.load(PATH_CENOURA).convert_alpha(), TAMANHO_SPRITE
     )
+    FONT = pygame.font.SysFont("Arial", 14)

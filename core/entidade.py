@@ -1,6 +1,8 @@
 import pygame
 from pygame import Surface
 
+from debug.debug_functions import draw_coords
+
 
 class Entidade:
     def __init__(self, x: float, y: float, sprite: Surface):
@@ -15,6 +17,7 @@ class Entidade:
     def get_pos(self):
         return self.x, self.y
 
+    @draw_coords
     def draw(self, screen: Surface):
         w, h = self.sprite.get_size()
         screen.blit(self.sprite, (int(self.x - w / 2), int(self.y - h / 2)))
