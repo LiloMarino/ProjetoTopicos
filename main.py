@@ -5,6 +5,7 @@ import pygame
 
 from core import constantes as const
 from core.simulador import Simulador
+from dynamic_config import aplicar_config_dinamica_segura, log_genome_config
 
 
 def carregar_config(caminho):
@@ -15,14 +16,6 @@ def carregar_config(caminho):
         neat.DefaultStagnation,
         str(caminho),
     )
-
-
-def log_genome_config(config, path="genome_config_log.txt"):
-    genome_cfg_dict = vars(config.genome_config)
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("=== GENOME CONFIG ===\n")
-        for key, value in genome_cfg_dict.items():
-            f.write(f"{key:30} = {value}\n")
 
 
 def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
@@ -172,8 +165,10 @@ if __name__ == "__main__":
             pop_coelho = neat.Population(config_coelho)
             pop_lobo = neat.Population(config_lobo)
 
-        # log_genome_config(pop_coelho.config, "genome_config_coelho_log.txt")
-        # log_genome_config(pop_lobo.config, "genome_config_lobo_log.txt")
+        aplicar_config_dinamica_segura(pop_coelho.config, config_coelho)
+        aplicar_config_dinamica_segura(pop_lobo.config, config_lobo)
+        log_genome_config(pop_coelho.config, "genome_config_coelho_log.txt")
+        log_genome_config(pop_lobo.config, "genome_config_lobo_log.txt")
         treinar_populacoes(pop_coelho, pop_lobo)
 
     elif modo == "n":
