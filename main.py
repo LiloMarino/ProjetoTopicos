@@ -48,70 +48,65 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
         genoma.fitness = fitness_lobos[i]
 
 
-def run_evolucao_dupla(config_path_coelho, config_path_lobo):
-    config_coelho = carregar_config(config_path_coelho)
-    config_lobo = carregar_config(config_path_lobo)
+def treinar_populacoes(
+    pop_coelho: neat.Population, pop_lobo: neat.Population, geracoes=50
+):
+    for pop in (pop_coelho, pop_lobo):
+        pop.add_reporter(neat.StdOutReporter(True))
+        pop.add_reporter(neat.StatisticsReporter())
 
-    pop_coelho = neat.Population(config_coelho)
-    pop_lobo = neat.Population(config_lobo)
-
-    pop_coelho.add_reporter(neat.StdOutReporter(True))
-    pop_coelho.add_reporter(neat.StatisticsReporter())
-    pop_lobo.add_reporter(neat.StdOutReporter(True))
-    pop_lobo.add_reporter(neat.StatisticsReporter())
-
-    geracoes = 50
     try:
         for geracao in range(geracoes):
             print(f"\n====== GERAÇÃO {geracao} ======")
 
-            # Gera listas de (id, genome)
             genomas_coelhos = list(pop_coelho.population.items())
             genomas_lobos = list(pop_lobo.population.items())
 
-            # Reporta início
             pop_coelho.reporters.start_generation(pop_coelho.generation)
             pop_lobo.reporters.start_generation(pop_lobo.generation)
 
-            # Avalia
-            avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
+            avaliar_genomas(
+                genomas_coelhos, pop_coelho.config, genomas_lobos, pop_lobo.config
+            )
 
-            # Reporta fim e reproduz
             pop_coelho.reporters.end_generation(
-                config_coelho, pop_coelho.population, pop_coelho.species
+                pop_coelho.config, pop_coelho.population, pop_coelho.species
             )
             pop_lobo.reporters.end_generation(
-                config_lobo, pop_lobo.population, pop_lobo.species
+                pop_lobo.config, pop_lobo.population, pop_lobo.species
             )
 
             pop_coelho.population = pop_coelho.reproduction.reproduce(
-                config_coelho,
+                pop_coelho.config,
                 pop_coelho.species,
-                config_coelho.pop_size,
+                pop_coelho.config.pop_size,
                 pop_coelho.generation,
             )
             pop_lobo.population = pop_lobo.reproduction.reproduce(
-                config_lobo, pop_lobo.species, config_lobo.pop_size, pop_lobo.generation
+                pop_lobo.config,
+                pop_lobo.species,
+                pop_lobo.config.pop_size,
+                pop_lobo.generation,
             )
 
             pop_coelho.species.speciate(
-                config_coelho, pop_coelho.population, pop_coelho.generation
+                pop_coelho.config, pop_coelho.population, pop_coelho.generation
             )
             pop_lobo.species.speciate(
-                config_lobo, pop_lobo.population, pop_lobo.generation
+                pop_lobo.config, pop_lobo.population, pop_lobo.generation
             )
 
             pop_coelho.generation += 1
             pop_lobo.generation += 1
+
     except KeyboardInterrupt:
-        print("\nInterrupção detectada! Salvando progresso...")
+        print("\nInterrupção detectada! Salvando população…")
     finally:
-        # Salva a população
         with open("pop_coelho.pkl", "wb") as f:
             pickle.dump(pop_coelho, f)
         with open("pop_lobo.pkl", "wb") as f:
             pickle.dump(pop_lobo, f)
-        print("População salva!")
+        print("Populações salvas!")
 
 
 def testar_melhores(config_path_coelho, config_path_lobo):
@@ -138,16 +133,40 @@ if __name__ == "__main__":
     pygame.display.set_mode(const.TAMANHO_TELA)
     const.init_constantes()
 
-    modo = (
-        input("Digite [t] para treinar ou [x] para testar os melhores salvos: ")
-        .strip()
-        .lower()
+    prompt = (
+        "[c]\tContinuar Treinando\n"
+        "[n]\tTreinar do Zero\n"
+        "[x]\tTestar Melhor Salvo\n"
+        "Escolha o modo [default: c]: "
     )
-    if modo == "t":
-        run_evolucao_dupla(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
+    modo = input(prompt).strip().lower() or "c"
+
+    config_coelho = carregar_config(const.NEAT_CONFIG_COELHO)
+    config_lobo = carregar_config(const.NEAT_CONFIG_LOBO)
+
+    if modo == "c":
+        try:
+            with open("pop_coelho.pkl", "rb") as f:
+                pop_coelho = pickle.load(f)
+            with open("pop_lobo.pkl", "rb") as f:
+                pop_lobo = pickle.load(f)
+            print("Populações carregadas, continuando evolução…")
+        except FileNotFoundError:
+            print("Nenhuma população salva. Criando do zero…")
+            pop_coelho = neat.Population(config_coelho)
+            pop_lobo = neat.Population(config_lobo)
+
+        treinar_populacoes(pop_coelho, pop_lobo)
+
+    elif modo == "n":
+        pop_coelho = neat.Population(config_coelho)
+        pop_lobo = neat.Population(config_lobo)
+        treinar_populacoes(pop_coelho, pop_lobo)
+
     elif modo == "x":
         testar_melhores(const.NEAT_CONFIG_COELHO, const.NEAT_CONFIG_LOBO)
+
     else:
-        print("Modo inválido.")
+        print("Modo inválido. Use Enter, 'c', 'n' ou 'x'.")
 
     pygame.quit()
