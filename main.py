@@ -109,13 +109,9 @@ def run_evolucao_dupla(config_path_coelho, config_path_lobo):
     finally:
         # Salva os melhores genomas mesmo se a execução for interrompida
         with open("melhor_coelho.pkl", "wb") as f:
-            best_coelho = copy.deepcopy(pop_coelho.best_genome)
-            best_coelho.connections = pop_coelho.best_genome.connections.copy()
-            pickle.dump(best_coelho, f)
+            pickle.dump(pop_coelho.best_genome, f)
         with open("melhor_lobo.pkl", "wb") as f:
-            best_lobo = copy.deepcopy(pop_lobo.best_genome)
-            best_lobo.connections = pop_lobo.best_genome.connections.copy()
-            pickle.dump(best_lobo, f)
+            pickle.dump(pop_lobo.best_genome, f)
         print("Melhores genomas salvos!")
         with open("pop_coelho.pkl", "wb") as f:
             pickle.dump(pop_coelho, f)
