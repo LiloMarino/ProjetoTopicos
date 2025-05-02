@@ -14,7 +14,7 @@ def aplicar_config_dinamica_segura(
     logger = logging.getLogger("NEAT-Dinamico")
     logger.setLevel(logging.INFO)
     if not logger.handlers:
-        file_handler = logging.FileHandler(log_path)
+        file_handler = logging.FileHandler(log_path, encoding="utf-8")
         file_handler.setLevel(logging.INFO)
         formatter = logging.Formatter("%(asctime)s - %(message)s")
         file_handler.setFormatter(formatter)
