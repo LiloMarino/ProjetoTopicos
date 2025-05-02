@@ -51,13 +51,16 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
 def treinar_populacoes(
     pop_coelho: neat.Population, pop_lobo: neat.Population, geracoes=50
 ):
+    pop_coelho.reporters.reporters.clear()
+    pop_lobo.reporters.reporters.clear()
     for pop in (pop_coelho, pop_lobo):
         pop.add_reporter(neat.StdOutReporter(True))
         pop.add_reporter(neat.StatisticsReporter())
 
     try:
         for geracao in range(geracoes):
-            print(f"\n====== GERAÇÃO {geracao} ======")
+            # Pega o generation do coelho só para mostrar na tela a numeração correta
+            print(f"\n====== GERAÇÃO {pop_coelho.generation} ======")
 
             genomas_coelhos = list(pop_coelho.population.items())
             genomas_lobos = list(pop_lobo.population.items())
