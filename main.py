@@ -25,32 +25,6 @@ def log_genome_config(config, path="genome_config_log.txt"):
             f.write(f"{key:30} = {value}\n")
 
 
-def recriar_populacoes(pop_coelho, pop_lobo, nova_config_coelho, nova_config_lobo):
-    print("Recriando populações com novas configurações...")
-
-    # Salva os genomas da população atual
-    genomas_coelhos = list(pop_coelho.population.items())
-    genomas_lobos = list(pop_lobo.population.items())
-
-    # Cria novas populações com as novas configurações
-    nova_pop_coelho = neat.Population(nova_config_coelho)
-    nova_pop_lobo = neat.Population(nova_config_lobo)
-
-    # Injeta os genomas antigos nas novas populações
-    nova_pop_coelho.population = {gid: genoma for gid, genoma in genomas_coelhos}
-    nova_pop_lobo.population = {gid: genoma for gid, genoma in genomas_lobos}
-
-    # Realiza a especiação novamente
-    nova_pop_coelho.species.speciate(
-        nova_config_coelho, nova_pop_coelho.population, nova_pop_coelho.generation
-    )
-    nova_pop_lobo.species.speciate(
-        nova_config_lobo, nova_pop_lobo.population, nova_pop_lobo.generation
-    )
-
-    return nova_pop_coelho, nova_pop_lobo
-
-
 def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
     # Cria o simulador com os genomas de ambas as espécies
     simulador = Simulador(genomas_coelhos, genomas_lobos, config_coelho, config_lobo)
@@ -198,7 +172,6 @@ if __name__ == "__main__":
             pop_coelho = neat.Population(config_coelho)
             pop_lobo = neat.Population(config_lobo)
 
-        # recriar_populacoes(pop_coelho, pop_lobo, config_coelho, config_lobo)
         # log_genome_config(pop_coelho.config, "genome_config_coelho_log.txt")
         # log_genome_config(pop_lobo.config, "genome_config_lobo_log.txt")
         treinar_populacoes(pop_coelho, pop_lobo)
