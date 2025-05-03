@@ -18,6 +18,7 @@ class Lobo(Entidade):
         self.distancia_coelho_anterior = None
         self.aproximou_do_coelho = 0
         self.distanciou_do_coelho = 0
+        self.colisao_obstaculo = 0
 
     def get_inputs(self, ambiente: Ambiente, coelhos: list):
         cx, cy = self.get_pos()
@@ -64,8 +65,8 @@ class Lobo(Entidade):
         self.fitness = 0
         self.fitness -= self.tempo_vivo * 1  # -1 por tempo vivo
         self.fitness += 100 * self.coelhos_comidos  # +100 por coelho comido
-        self.fitness += self.aproximou_do_coelho  # +1 por cada aproximação de coelho
-        self.fitness -= self.distanciou_do_coelho  # -1 por cada vez que se afastou
+        self.fitness -= 2 * self.colisao_obstaculo  # -2 por colisão com obstáculo
+        self.fitness -= self.distanciou_do_coelho  # +1 por cada vez que se afastou
         if not self.vivo:
             self.fitness -= 100  # -100 por morrer
 
@@ -105,11 +106,16 @@ class Lobo(Entidade):
                 self.distanciou_do_coelho += 1
         self.distancia_coelho_anterior = dist_coelho_atual
 
+        # Verifica se colidiu com obstáculo
+        w, h = self.sprite.get_size()
+        if ambiente.have_collision_hitbox(self.x, self.y, w, h):
+            self.colisao_obstaculo += 1
+
         # Verifica se não morreu de fome
         # 50% do tempo total + 10% do tempo total a cada coelho comido
         if (
             self.tempo_vivo
-            > const.MAX_TICKS * 0.5 + self.coelhos_comidos * const.MAX_TICKS * 0.10
+            > const.MAX_TICKS * 0.2 + self.coelhos_comidos * const.MAX_TICKS * 0.10
         ):
             self.morrer()
 
