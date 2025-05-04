@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Set
 
 import neat.nn
 from pygame import Surface
@@ -19,16 +19,18 @@ class Simulador:
         for gid, genome in genomas_coelhos:
             net = neat.nn.FeedForwardNetwork.create(genome, config_coelho)
             x, y = self._spawn_point()
-            self.coelhos.append(Coelho(x, y, net))
+            self.coelhos.append(Coelho(x, y, net, self))
             genome.fitness = 0.0
 
         # Instancia e inicializa lobos
         for gid, genome in genomas_lobos:
             net = neat.nn.FeedForwardNetwork.create(genome, config_lobo)
             x, y = self._spawn_point()
-            self.lobos.append(Lobo(x, y, net))
+            self.lobos.append(Lobo(x, y, net, self))
             genome.fitness = 0.0
 
+        self.coelhos_vivos: Set[Coelho] = set(self.coelhos)
+        self.lobos_vivos: Set[Lobo] = set(self.lobos)
         self.tempo_total = 0
 
     def _spawn_point(self):
@@ -44,9 +46,9 @@ class Simulador:
         self.tempo_total += 1
         self.ambiente.update()
         for c in self.coelhos:
-            c.update(self.ambiente, self.lobos)
+            c.update(self.ambiente, self.lobos_vivos)
         for l in self.lobos:
-            l.update(self.ambiente, self.coelhos)
+            l.update(self.ambiente, self.coelhos_vivos)
 
     def draw(self, screen: Surface):
         # Desenha o estado atual do simulador.

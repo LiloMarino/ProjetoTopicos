@@ -1,5 +1,7 @@
 import math
 
+import neat
+
 from core import constantes as const
 from core.ambiente import Ambiente
 from core.entidade import Entidade
@@ -8,9 +10,12 @@ from core.entidade import Entidade
 class Coelho(Entidade):
     VELOCIDADE = 3
 
-    def __init__(self, x: float, y: float, cerebro):
+    def __init__(
+        self, x: float, y: float, cerebro: neat.nn.FeedForwardNetwork, simulador
+    ):
         super().__init__(x, y, const.IMG_COELHO)
         self.cerebro = cerebro
+        self.simulador = simulador
         self.vivo = True
         self.fitness = 0
         self.tempo_vivo = 0
@@ -20,7 +25,7 @@ class Coelho(Entidade):
         self.aproximou_do_lobo = 0
         self.colisao_obstaculo = 0
 
-    def get_inputs(self, ambiente: Ambiente, lobos: list):
+    def get_inputs(self, ambiente: Ambiente, lobos_vivos: set):
         cx, cy = self.get_pos()
 
         # Cenoura mais próxima
@@ -40,7 +45,6 @@ class Coelho(Entidade):
         )
 
         # Lobo mais próximo (vivo)
-        lobos_vivos = [l for l in lobos if l.vivo]
         if lobos_vivos:
             lobo = min(lobos_vivos, key=lambda l: (l.x - cx) ** 2 + (l.y - cy) ** 2)
             dx_lobo = lobo.x - cx
@@ -86,13 +90,13 @@ class Coelho(Entidade):
         if not self.vivo:
             self.fitness -= 100  # -100 por morrer
 
-    def update(self, ambiente: Ambiente, lobos: list):
+    def update(self, ambiente: Ambiente, lobos_vivos: set):
         if not self.vivo:
             return
 
         self.tempo_vivo += 1
 
-        inputs, dist_lobo_atual = self.get_inputs(ambiente, lobos)
+        inputs, dist_lobo_atual = self.get_inputs(ambiente, lobos_vivos)
         outputs = self.cerebro.activate(inputs)  # [cima, baixo, direita, esquerda]
 
         dx = (outputs[2] - outputs[3]) * self.VELOCIDADE
@@ -136,4 +140,5 @@ class Coelho(Entidade):
 
     def morrer(self):
         self.vivo = False
+        self.simulador.coelhos_vivos.discard(self)
         self.aplicar_tom_vermelho()

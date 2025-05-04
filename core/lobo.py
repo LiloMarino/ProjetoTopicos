@@ -1,5 +1,7 @@
 import math
 
+import neat
+
 from core import constantes as const
 from core.ambiente import Ambiente
 from core.entidade import Entidade
@@ -8,9 +10,12 @@ from core.entidade import Entidade
 class Lobo(Entidade):
     VELOCIDADE = 3.5
 
-    def __init__(self, x: float, y: float, cerebro):
+    def __init__(
+        self, x: float, y: float, cerebro: neat.nn.FeedForwardNetwork, simulador
+    ):
         super().__init__(x, y, const.IMG_LOBO)
         self.cerebro = cerebro
+        self.simulador = simulador
         self.vivo = True
         self.fitness = 0
         self.tempo_vivo = 0
@@ -20,11 +25,10 @@ class Lobo(Entidade):
         self.distanciou_do_coelho = 0
         self.colisao_obstaculo = 0
 
-    def get_inputs(self, ambiente: Ambiente, coelhos: list):
+    def get_inputs(self, ambiente: Ambiente, coelhos_vivos: set):
         cx, cy = self.get_pos()
 
         # Coelho mais próximo (vivo)
-        coelhos_vivos = [c for c in coelhos if c.vivo]
         if coelhos_vivos:
             coelho = min(coelhos_vivos, key=lambda c: (c.x - cx) ** 2 + (c.y - cy) ** 2)
             dx_coelho = coelho.x - cx
@@ -70,13 +74,13 @@ class Lobo(Entidade):
         if not self.vivo:
             self.fitness -= 100  # -100 por morrer
 
-    def update(self, ambiente: Ambiente, coelhos: list):
+    def update(self, ambiente: Ambiente, coelhos_vivos: set):
         if not self.vivo:
             return
 
         self.tempo_vivo += 1
 
-        inputs, dist_coelho_atual = self.get_inputs(ambiente, coelhos)
+        inputs, dist_coelho_atual = self.get_inputs(ambiente, coelhos_vivos)
         outputs = self.cerebro.activate(inputs)  # [cima, baixo, direita, esquerda]
 
         dx = (outputs[2] - outputs[3]) * self.VELOCIDADE
@@ -89,14 +93,13 @@ class Lobo(Entidade):
             self.move(dx, dy)
 
         # Verifica se pegou coelho
-        for coelho in coelhos:
-            if (
-                coelho.vivo
-                and math.hypot(self.x - coelho.x, self.y - coelho.y)
-                < const.ACTION_RANGE
-            ):
-                coelho.morrer()
+        coelhos_mortos = []
+        for coelho in coelhos_vivos:
+            if math.hypot(self.x - coelho.x, self.y - coelho.y) < const.ACTION_RANGE:
+                coelhos_mortos.append(coelho)
                 self.coelhos_comidos += 1
+        for coelho in coelhos_mortos:
+            coelho.morrer()
 
         # Verifica se se aproximou do coelho
         if self.distancia_coelho_anterior is not None:
@@ -124,4 +127,5 @@ class Lobo(Entidade):
 
     def morrer(self):
         self.vivo = False
+        self.simulador.lobos_vivos.discard(self)
         self.aplicar_tom_vermelho()
