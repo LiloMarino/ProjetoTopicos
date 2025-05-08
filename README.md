@@ -66,3 +66,23 @@ Onde o agente vive e que define regras e colisões
 
 ### Simulador 🌎
 
+## Utilidades
+
+### Profilers
+
+Para utilizar o profiler do python usar o seguinte comando:
+```bash
+python -m cProfile -o resultado.prof main.py
+```
+Para visualizar o profiler usar o seguinte comando:
+```bash	
+snakeviz resultado.prof
+```
+Para usar o line profiler usar o seguinte comando:
+```bash
+kernprof -l -v main.py
+```
+Para visualizar o line profiler usar o seguinte comando:
+```bash
+python -m line_profiler main.py.lprof
+```

@@ -1,2 +1,6 @@
+line_profiler==4.2.0
 neat-python==0.92
+numpy==2.2.5
 pygame==2.6.1
+snakeviz==2.2.2
+tornado==6.4.2
