@@ -2,6 +2,7 @@ import math
 import random
 import time
 
+import numpy as np
 import pygame
 from pygame import Surface
 
@@ -24,11 +25,13 @@ class Ambiente:
             self.img_ambiente_mask, const.TAMANHO_TELA
         )
 
-        # Cria a máscara a partir da versão redimensionada
-        self.img_ambiente_mask.set_colorkey(
-            (255, 255, 255)
-        )  # Define a cor branca como transparente
-        self.img_ambiente_mask = pygame.mask.from_surface(self.img_ambiente_mask)
+        # Converte imagem de máscara para array numpy de 3 canais (RGB)
+        surf_array = pygame.surfarray.array3d(self.img_ambiente_mask)  # shape (w, h, 3)
+
+        # Define como obstáculo todos os pixels pretos (0,0,0)
+        self.mask_binaria = np.all(
+            surf_array == [0, 0, 0], axis=-1
+        ).T  # Transposto para (x, y)
 
         self.width = self.img_ambiente.get_width()
         self.height = self.img_ambiente.get_height()
@@ -48,7 +51,7 @@ class Ambiente:
             y = random.randint(h // 2, self.height - h // 2)
 
             # Verifica se a posição gerada está livre
-            if not self.img_ambiente_mask.get_at((x, y)):
+            if not self.mask_binaria[x, y]:
                 self.cenouras.append((x, y))
                 break
 
@@ -86,7 +89,7 @@ class Ambiente:
         if x < 0 or y < 0 or x >= self.width or y >= self.height:
             return True
         # Retorna True se for preto no mask
-        return self.img_ambiente_mask.get_at((x, y))
+        return self.mask_binaria[x, y]
 
     def detect_obstacles(
         self, x_centro: float, y_centro: float, w: int, h: int
@@ -128,7 +131,7 @@ class Ambiente:
         return any(self.detect_obstacles(x_centro, y_centro, w, h))
 
     def get_nearest_obstacle_info(
-        self, x: float, y: float, max_dist: float = 150, steps: int = 36
+        self, x: float, y: float, max_dist: float = 64, steps: int = 36
     ):
         """
         Retorna a direção normalizada e a distância até o obstáculo mais próximo.
