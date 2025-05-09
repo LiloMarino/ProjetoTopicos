@@ -112,7 +112,7 @@ class Lobo(Entidade):
             self.colisao_obstaculo += 1
 
         # Verifica se não morreu de fome
-        # 50% do tempo total + 10% do tempo total a cada coelho comido
+        # 20% do tempo total + 10% do tempo total a cada coelho comido
         if (
             self.tempo_vivo
             > const.MAX_TICKS * 0.2 + self.coelhos_comidos * const.MAX_TICKS * 0.10

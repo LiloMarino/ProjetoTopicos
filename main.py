@@ -117,23 +117,59 @@ def treinar_populacoes(
             pickle.dump(pop_lobo, f)
         print("Populações salvas!")
 
+        # Extrai melhor genoma histórico
+        melhor_genoma_coelho = pop_coelho.best_genome
+        melhor_genoma_lobo = pop_lobo.best_genome
+
+        # Se não existir melhor_genome (pode acontecer na 1ª gen), pega o atual com maior fitness
+        if melhor_genoma_coelho is None:
+            melhor_genoma_coelho = max(
+                pop_coelho.population.values(), key=lambda g: g.fitness or 0
+            )
+        if melhor_genoma_lobo is None:
+            melhor_genoma_lobo = max(
+                pop_lobo.population.values(), key=lambda g: g.fitness or 0
+            )
+
+        with open("melhor_coelho.pkl", "wb") as f:
+            pickle.dump(melhor_genoma_coelho, f)
+        with open("melhor_lobo.pkl", "wb") as f:
+            pickle.dump(melhor_genoma_lobo, f)
+
 
 def testar_melhores(config_path_coelho, config_path_lobo):
     config_coelho = carregar_config(config_path_coelho)
     config_lobo = carregar_config(config_path_lobo)
 
-    # Carrega os melhores genomas
-    with open("pop_coelho.pkl", "rb") as f:
-        pop_coelho = pickle.load(f)
-    with open("pop_lobo.pkl", "rb") as f:
-        pop_lobo = pickle.load(f)
+    # Carrega as populações inteiras
+    with open("melhor_coelho.pkl", "rb") as f:
+        best_coelho = pickle.load(f)
+    with open("melhor_lobo.pkl", "rb") as f:
+        best_lobo = pickle.load(f)
 
-    # Cria listas com um único genoma
-    genomas_coelhos = [(0, pop_coelho.best_genome)]
-    genomas_lobos = [(0, pop_lobo.best_genome)]
+    num_coelhos = config_coelho.pop_size
+    num_lobos = config_lobo.pop_size
 
-    # Roda a simulação normal (sem NEAT)
-    avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
+    # Cria listas de um único genoma para avaliação
+    genomas_coelhos = [(0, best_coelho)]
+    genomas_lobos = [(0, best_lobo)]
+
+    rodando = True
+    while rodando:
+        # Clona os melhores para criar uma nova simulação
+        genomas_coelhos = [
+            (i, pickle.loads(pickle.dumps(best_coelho))) for i in range(num_coelhos)
+        ]
+        genomas_lobos = [
+            (i, pickle.loads(pickle.dumps(best_lobo))) for i in range(num_lobos)
+        ]
+
+        # Avalia e executa a simulação (inclui visualização)
+        avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo)
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
 
 
 if __name__ == "__main__":

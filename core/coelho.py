@@ -81,7 +81,7 @@ class Coelho(Entidade):
 
     def calcular_fitness(self):
         self.fitness = 0
-        self.fitness += 100 * self.cenouras_comidas  # +100 por cenoura
+        self.fitness += 50 * self.cenouras_comidas  # +50 por cenoura
         self.fitness += self.distanciou_do_lobo  # +1 por cada vez que se afastou
         self.fitness -= 2 * self.colisao_obstaculo  # -2 por colisão com obstáculo
         if not self.vivo:
@@ -125,7 +125,7 @@ class Coelho(Entidade):
             self.colisao_obstaculo += 1
 
         # Verifica se não morreu de fome
-        # 50% do tempo total + 10% do tempo total a cada cenoura comida
+        # 20% do tempo total + 10% do tempo total a cada cenoura comida
         if (
             self.tempo_vivo
             > const.MAX_TICKS * 0.2 + self.cenouras_comidas * const.MAX_TICKS * 0.10
