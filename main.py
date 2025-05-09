@@ -26,19 +26,23 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
     clock = pygame.time.Clock()
 
     tick = 0
+    frame_count = 0
     rodando = True
     while rodando and tick < const.MAX_TICKS and not simulador.terminou():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
 
-        simulador.executar_tick()
+        if frame_count % const.TICKS_POR_FRAME == 0:
+            simulador.executar_tick()
+            tick += 1
+
         tela.fill((0, 0, 0))
         simulador.draw(tela)
-
         pygame.display.flip()
-        clock.tick(const.FPS)
-        tick += 1
+
+        clock.tick(const.FPS)  # FPS de renderização
+        frame_count += 1
 
     # Depois, extrai fitness dos agentes
     fitness_coelhos, fitness_lobos = simulador.obter_fitness()
@@ -138,6 +142,7 @@ def treinar_populacoes(
 
 
 def testar_melhores(config_path_coelho, config_path_lobo):
+    const.TICKS_POR_FRAME = 10  # Reduz a velocidade para melhor visualização
     config_coelho = carregar_config(config_path_coelho)
     config_lobo = carregar_config(config_path_lobo)
 

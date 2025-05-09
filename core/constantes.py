@@ -15,7 +15,7 @@ PATH_COELHO = ASSETS_DIR / "cueio.png"
 PATH_LOBO = ASSETS_DIR / "lobo.png"
 PATH_CENOURA = ASSETS_DIR / "cenoura.png"
 PATH_AMBIENTE = ASSETS_DIR / "ambiente.png"
-PATH_AMBIENTE_MASK = ASSETS_DIR / "ambiente_mask.png"
+PATH_AMBIENTE_MASK = ASSETS_DIR / "livre_mask.png"
 
 # Caminhos de config NEAT
 NEAT_CONFIG_COELHO = BASE_DIR / "core" / "neat-config-coelho.ini"
@@ -28,6 +28,8 @@ IMG_CENOURA = None
 
 # Outras constantes
 MAX_TICKS = 1000
+# Avança 1 tick a cada 1 frames renderizados
+TICKS_POR_FRAME = 1
 FPS = 60
 ACTION_RANGE = 20
 FONT = None
