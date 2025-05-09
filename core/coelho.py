@@ -64,7 +64,7 @@ class Coelho(Entidade):
 
         # Obstáculos
         w, h = self.sprite.get_size()
-        up, down, left, right = ambiente.detect_obstacles(cx, cy, w, h)
+        up, down, left, right = ambiente.detect_obstacles(cx, cy)
         obstaculos = [int(up), int(down), int(left), int(right)]
 
         # Grid 3x3 de obstáculos ao redor do agente (8 inputs)
@@ -101,9 +101,10 @@ class Coelho(Entidade):
 
         # Tenta se mover
         nova_x, nova_y = self.x + dx, self.y + dy
-        w, h = self.sprite.get_size()
-        if not ambiente.have_collision_hitbox(nova_x, nova_y, w, h):
+        if not ambiente.have_collision_hitbox(nova_x, nova_y):
             self.move(dx, dy)
+        else:
+            self.colisao_obstaculo += 1
 
         # Verifica se comeu cenoura
         for cenoura_x, cenoura_y in ambiente.cenouras:
@@ -118,11 +119,6 @@ class Coelho(Entidade):
             else:
                 self.aproximou_do_lobo += 1
         self.distancia_lobo_anterior = dist_lobo_atual
-
-        # Verifica se colidiu com obstáculo
-        w, h = self.sprite.get_size()
-        if ambiente.have_collision_hitbox(self.x, self.y, w, h):
-            self.colisao_obstaculo += 1
 
         # Verifica se não morreu de fome
         # 20% do tempo total + 10% do tempo total a cada cenoura comida

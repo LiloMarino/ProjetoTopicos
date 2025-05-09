@@ -90,25 +90,25 @@ class Ambiente:
         return self.mask_binaria[x, y]
 
     def detect_obstacles(
-        self, x_centro: float, y_centro: float, w: int, h: int
+        self, x_centro: float, y_centro: float
     ) -> tuple[bool, bool, bool, bool]:
         """
         Retorna uma tupla de 4 booleans (up, down, left, right) indicando
         se há colisão logo acima, abaixo, à esquerda e à direita da hitbox
         centrada em (x_centro, y_centro) com tamanho w x h.
         """
-        half_w, half_h = w / 2, h / 2
+        half_w, half_h = (1, 1)
         x = x_centro - half_w
         y = y_centro - half_h
         pontos = [
             (x + half_w, y),  # Meio superior
             (x, y),  # Canto superior esquerdo
-            (x + w, y),  # Canto superior direito
+            (x + 2 * half_w, y),  # Canto superior direito
             (x, y + half_h),  # Meio esquerdo
-            (x + w, y + half_h),  # Meio direito
-            (x, y + h),  # Canto inferior esquerdo
-            (x + w, y + h),  # Canto inferior direito
-            (x + half_w, y + h),  # Meio inferior
+            (x + 2 * half_w, y + half_h),  # Meio direito
+            (x, y + 2 * half_h),  # Canto inferior esquerdo
+            (x + 2 * half_w, y + 2 * half_h),  # Canto inferior direito
+            (x + half_w, y + 2 * half_h),  # Meio inferior
         ]
         up = any(self.have_collision(x, y) for x, y in pontos[:3])
         down = any(self.have_collision(x, y) for x, y in pontos[5:])
@@ -116,9 +116,7 @@ class Ambiente:
         right = any(self.have_collision(x, y) for x, y in pontos[2:7:2])
         return up, down, left, right
 
-    def have_collision_hitbox(
-        self, x_centro: float, y_centro: float, w: int, h: int
-    ) -> bool:
+    def have_collision_hitbox(self, x_centro: float, y_centro: float) -> bool:
         """
         Verifica colisão nos quatro cantos e nos quatro pontos médios das arestas da hitbox,
         a partir do centro da hitbox:
@@ -126,7 +124,7 @@ class Ambiente:
         - Meios:  (x+w/2, y), (x, y+h/2), (x+w, y+h/2), (x+w/2, y+h)
         Retorna True se QUALQUER ponto estiver colidindo.
         """
-        return any(self.detect_obstacles(x_centro, y_centro, w, h))
+        return any(self.detect_obstacles(x_centro, y_centro))
 
     def get_local_occupancy_grid(self, x_centro: float, y_centro: float) -> list[int]:
         """
