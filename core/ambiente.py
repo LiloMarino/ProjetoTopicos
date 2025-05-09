@@ -130,31 +130,49 @@ class Ambiente:
         """
         return any(self.detect_obstacles(x_centro, y_centro, w, h))
 
-    def get_nearest_obstacle_info(
-        self, x: float, y: float, max_dist: float = 64, steps: int = 36
-    ):
+    def get_local_occupancy_grid(self, x_centro: float, y_centro: float) -> list[int]:
         """
-        Retorna a direção normalizada e a distância até o obstáculo mais próximo.
-        A varredura é feita em vários ângulos a partir da posição (x, y).
+        Retorna 8 valores (0 ou 1) com occupancy grid 3x3 ao redor da hitbox.
         """
-        closest_distance = max_dist
-        closest_dx, closest_dy = 0, 0
+        half_w, half_h = const.TAMANHO_SPRITE[0] / 2, const.TAMANHO_SPRITE[1] / 2
+        cell_w, cell_h = const.TAMANHO_SPRITE
+        xc, yc = int(x_centro), int(y_centro)
 
-        for i in range(steps):
-            angle = (2 * math.pi / steps) * i
-            dx = math.cos(angle)
-            dy = math.sin(angle)
+        offsets = [
+            (-1, -1),
+            (0, -1),
+            (1, -1),  # cima esquerda, cima, cima direita
+            (-1, 0),
+            (1, 0),  # esquerda,      , direita
+            (-1, 1),
+            (0, 1),
+            (1, 1),
+        ]  # baixo esquerda, baixo, baixo direita
 
-            for d in range(1, int(max_dist)):
-                tx = int(x + dx * d)
-                ty = int(y + dy * d)
-                if self.have_collision(tx, ty):
-                    if d < closest_distance:
-                        closest_distance = d
-                        closest_dx = dx
-                        closest_dy = dy
-                    break
+        result = []
 
-        direction = (closest_dx, closest_dy)
-        normalized_distance = closest_distance / max_dist  # [0, 1]
-        return direction, normalized_distance
+        for dx, dy in offsets:
+            # Canto da célula
+            x0 = xc + dx * cell_w - half_w
+            y0 = yc + dy * cell_h - half_h
+
+            # Limites do slice
+            x1 = int(x0)
+            y1 = int(y0)
+            x2 = x1 + cell_w
+            y2 = y1 + cell_h
+
+            # Clipe aos limites do mapa
+            x1c, x2c = max(0, x1), min(self.width, x2)
+            y1c, y2c = max(0, y1), min(self.height, y2)
+
+            # Se a célula está totalmente fora do mapa, considere obstáculo
+            if x1c >= x2c or y1c >= y2c:
+                result.append(1)
+                continue
+
+            # Verifica ocupação na mask_binaria
+            occupied = self.mask_binaria[x1c:x2c, y1c:y2c].any()
+            result.append(1 if occupied else 0)
+
+        return result

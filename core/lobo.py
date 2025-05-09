@@ -52,17 +52,14 @@ class Lobo(Entidade):
         up, down, left, right = ambiente.detect_obstacles(cx, cy, w, h)
         obstaculos = [int(up), int(down), int(left), int(right)]
 
-        # Obstáculo mais próximo
-        direction_obstaculo, dist_obstaculo_norm = ambiente.get_nearest_obstacle_info(
-            cx, cy
-        )
+        # Grid 3x3 de obstáculos ao redor do agente (8 inputs)
+        grid_obstaculos = ambiente.get_local_occupancy_grid(cx, cy)
 
         return [
             dist_coelho_norm,
             *direction_coelho,
             *obstaculos,
-            *direction_obstaculo,
-            dist_obstaculo_norm,
+            *grid_obstaculos,
         ], dist_coelho
 
     def calcular_fitness(self):
