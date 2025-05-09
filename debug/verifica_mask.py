@@ -7,40 +7,23 @@ import pygame
 # Adiciona o diretório raiz ao sys.path para importar a pasta 'core'
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from core import constantes as const
+from core.ambiente import Ambiente
 
 # Inicializa o Pygame
 pygame.init()
-
-# Inicializa a janela Pygame
+pygame.display.set_caption("Simulador Ecológico com Coevolução")
 screen = pygame.display.set_mode(const.TAMANHO_TELA)
-pygame.display.set_caption("Visualização da Máscara de Movimento")
+const.init_constantes()
 
-# Carrega a imagem de máscara e converte para RGB
-mask_img = pygame.image.load(const.PATH_AMBIENTE_MASK).convert()
-mask_img = pygame.transform.scale(mask_img, const.TAMANHO_TELA)
-width, height = mask_img.get_size()
-mask_img.set_colorkey((255, 255, 255))
-mask_img = pygame.mask.from_surface(mask_img)
+ambient = Ambiente()
 
 # Cria uma nova superfície para a visualização da máscara
-debug_surface = pygame.Surface((width, height))
-
-
-# Função para verificar colisão (simulando como no seu código)
-def have_collision(x: float, y: float) -> bool:
-    x = int(x)
-    y = int(y)
-    # Verifica se está dentro dos limites da imagem
-    if x < 0 or y < 0 or x >= width or y >= height:
-        return True  # Fora dos limites, considera colisão
-    # Retorna True se NÃO for "andável" (preto no mask)
-    return mask_img.get_at((x, y))  # A máscara é preto, então True se for proibido
-
+debug_surface = pygame.Surface(const.TAMANHO_TELA)
 
 # Pinta a superfície com base na máscara
-for y in range(height):
-    for x in range(width):
-        if have_collision(x, y):
+for y in range(const.TAMANHO_TELA[1]):
+    for x in range(const.TAMANHO_TELA[0]):
+        if ambient.have_collision(x, y):
             debug_surface.set_at((x, y), (255, 0, 0))  # Vermelho = proibido
         else:
             debug_surface.set_at((x, y), (0, 255, 0))  # Verde = pode andar
