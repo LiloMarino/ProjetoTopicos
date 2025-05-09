@@ -10,9 +10,9 @@ from core import constantes as const
 
 
 class Ambiente:
-    RESPAWN_CENOURA = 10
+    RESPAWN_CENOURA = 0.5
 
-    def __init__(self, n_cenouras: int = 10):
+    def __init__(self, n_cenouras: int = 200):
         self.img_ambiente = pygame.image.load(const.PATH_AMBIENTE).convert()
         self.img_ambiente_mask = pygame.image.load(const.PATH_AMBIENTE_MASK).convert()
         self.img_cenoura = const.IMG_CENOURA
@@ -29,9 +29,7 @@ class Ambiente:
         surf_array = pygame.surfarray.array3d(self.img_ambiente_mask)  # shape (w, h, 3)
 
         # Define como obstáculo todos os pixels pretos (0,0,0)
-        self.mask_binaria = np.all(
-            surf_array == [0, 0, 0], axis=-1
-        ).T  # Transposto para (x, y)
+        self.mask_binaria = np.all(surf_array == [0, 0, 0], axis=-1)
 
         self.width = self.img_ambiente.get_width()
         self.height = self.img_ambiente.get_height()
