@@ -67,7 +67,8 @@ class Lobo(Entidade):
         self.fitness -= self.tempo_vivo * 1  # -1 por tempo vivo
         self.fitness += 100 * self.coelhos_comidos  # +100 por coelho comido
         self.fitness -= 2 * self.colisao_obstaculo  # -2 por colisão com obstáculo
-        self.fitness -= self.distanciou_do_coelho  # +1 por cada vez que se afastou
+        self.fitness += 2 * self.aproximou_do_coelho  # +2 por cada vez que se aproximou
+        self.fitness -= self.distanciou_do_coelho  # -1 por cada vez que se afastou
         if not self.vivo:
             self.fitness -= 100  # -100 por morrer
 

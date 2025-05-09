@@ -54,10 +54,14 @@ def avaliar_genomas(genomas_coelhos, config_coelho, genomas_lobos, config_lobo):
 
 
 def treinar_populacoes(
-    pop_coelho: neat.Population, pop_lobo: neat.Population, geracoes=50
+    pop_coelho: neat.Population,
+    pop_lobo: neat.Population,
+    geracoes=50,
+    treinar_lobos=True,
 ):
     pop_coelho.reporters.reporters.clear()
     pop_lobo.reporters.reporters.clear()
+
     for pop in (pop_coelho, pop_lobo):
         pop.add_reporter(neat.StdOutReporter(True))
         pop.add_reporter(neat.StatisticsReporter())
@@ -72,19 +76,23 @@ def treinar_populacoes(
 
             # Avaliação dos genomas
             pop_coelho.reporters.start_generation(pop_coelho.generation)
-            pop_lobo.reporters.start_generation(pop_lobo.generation)
+            if treinar_lobos:
+                pop_lobo.reporters.start_generation(pop_lobo.generation)
 
             avaliar_genomas(
                 genomas_coelhos, pop_coelho.config, genomas_lobos, pop_lobo.config
             )
 
             # Finaliza geração
+            print(f"=== COELHO ===")
             pop_coelho.reporters.end_generation(
                 pop_coelho.config, pop_coelho.population, pop_coelho.species
             )
-            pop_lobo.reporters.end_generation(
-                pop_lobo.config, pop_lobo.population, pop_lobo.species
-            )
+            if treinar_lobos:
+                print(f"=== LOBO ===")
+                pop_lobo.reporters.end_generation(
+                    pop_lobo.config, pop_lobo.population, pop_lobo.species
+                )
 
             # Reproduz as populações
             pop_coelho.population = pop_coelho.reproduction.reproduce(
@@ -93,24 +101,27 @@ def treinar_populacoes(
                 pop_coelho.config.pop_size,
                 pop_coelho.generation,
             )
-            pop_lobo.population = pop_lobo.reproduction.reproduce(
-                pop_lobo.config,
-                pop_lobo.species,
-                pop_lobo.config.pop_size,
-                pop_lobo.generation,
-            )
+            if treinar_lobos:
+                pop_lobo.population = pop_lobo.reproduction.reproduce(
+                    pop_lobo.config,
+                    pop_lobo.species,
+                    pop_lobo.config.pop_size,
+                    pop_lobo.generation,
+                )
 
             # Especiação
             pop_coelho.species.speciate(
                 pop_coelho.config, pop_coelho.population, pop_coelho.generation
             )
-            pop_lobo.species.speciate(
-                pop_lobo.config, pop_lobo.population, pop_lobo.generation
-            )
+            if treinar_lobos:
+                pop_lobo.species.speciate(
+                    pop_lobo.config, pop_lobo.population, pop_lobo.generation
+                )
 
             # Avança geração
             pop_coelho.generation += 1
-            pop_lobo.generation += 1
+            if treinar_lobos:
+                pop_lobo.generation += 1
 
     except KeyboardInterrupt:
         print("\nInterrupção detectada! Salvando população…")
@@ -142,7 +153,7 @@ def treinar_populacoes(
 
 
 def testar_melhores(config_path_coelho, config_path_lobo):
-    const.TICKS_POR_FRAME = 10  # Reduz a velocidade para melhor visualização
+    const.TICKS_POR_FRAME = 5  # Reduz a velocidade para melhor visualização
     config_coelho = carregar_config(config_path_coelho)
     config_lobo = carregar_config(config_path_lobo)
 
@@ -208,9 +219,7 @@ if __name__ == "__main__":
 
         aplicar_config_dinamica_segura(pop_coelho.config, config_coelho)
         aplicar_config_dinamica_segura(pop_lobo.config, config_lobo)
-        log_genome_config(pop_coelho.config, "genome_config_coelho_log.txt")
-        log_genome_config(pop_lobo.config, "genome_config_lobo_log.txt")
-        treinar_populacoes(pop_coelho, pop_lobo)
+        treinar_populacoes(pop_coelho, pop_lobo, 200)
 
     elif modo == "n":
         pop_coelho = neat.Population(config_coelho)

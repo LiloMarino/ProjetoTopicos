@@ -27,7 +27,7 @@ IMG_LOBO = None
 IMG_CENOURA = None
 
 # Outras constantes
-MAX_TICKS = 500
+MAX_TICKS = 250
 # Avança 1 tick a cada 1 frames renderizados
 TICKS_POR_FRAME = 1
 FPS = 60
